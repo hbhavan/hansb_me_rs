@@ -1,0 +1,72 @@
+/* Code */
+.code-block {
+    font-size: x-large;
+}
+
+.code-snippet {
+    font-size: medium;
+}
+
+/* Link */
+.link {
+    width: 400px;
+    color: var(--secondary-color);
+    border: var(--tertiary-color) 1px solid;
+    text-decoration: none;
+    text-align: left;
+    font-size: x-large;
+    display: flex;
+    flex-direction: column;
+}
+
+.link a {
+    margin-top: 20px;
+    margin: 10px 0px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.link a:hover {
+    background-color: var(--tertiary-color);
+    cursor: pointer;
+}
+
+/* Markdown */
+
+
+
+/* Navbar */
+.navbar {
+    display: flex;
+    flex-direction: row;
+    font-size: x-large;
+    gap: 64px;
+}
+
+.navbar a {
+    color: var(--secondary-color);
+    border: var(--tertiary-color) 2px solid;
+    border-radius: 8px;
+    padding: 8px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.navbar a:hover {
+    cursor: pointer;
+    color: var(--primary-subcolor);
+}
+
+/* Section */
+.title+.section {
+    padding-left: 36px;
+}
+
+/* Titles and Headers */
+.title {
+    margin-bottom: 24px;
+}
+
+.title+.title {
+    margin-top: 48px;
+}

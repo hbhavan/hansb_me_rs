@@ -1,0 +1,68 @@
+:root {
+    --bg-color: #1C1C1C;
+
+    --primary-color: #DBA453;
+    --primary-subcolor: #FFCC84;
+
+    --secondary-color: #8484FF;
+
+    --tertiary-color: #BEBAFF;
+
+    --base-color: #FFFFFF;
+
+    --shadow: #000000;
+}
+
+/* Body */
+body {
+    background-color: var(--bg-color);
+    color: var(--base-color);
+    font-family: 'Helvetica', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 30px;
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+/* Code */
+code {
+    border: var(--tertiary-color) 1px solid;
+    border-radius: 8px;
+    box-shadow: 10px 8px 8px var(--shadow);
+    padding: 20px;
+}
+
+/* Header */
+h1 {
+    color: var(--primary-color);
+    font-size: 108px;
+}
+
+h2 {
+    color: var(--tertiary-color);
+    font-size: 96px;
+}
+
+h3 {
+    color: var(--secondary-color);
+    font-size: 72px;
+}
+
+h4 {
+    color: var(--primary-color);
+    font-size: 64px;
+}
+
+h5 {
+    color: var(--tertiary-color);
+    font-size: 48px;
+}
+
+h6 {
+    color: var(--secondary-color);
+    font-size: 36px;
+}
+
+section {
+    color: var(--base-color);
+    font-size: 24px;
+}
