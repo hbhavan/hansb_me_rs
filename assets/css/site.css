@@ -18,17 +18,13 @@ body {
     background-color: var(--bg-color);
     color: var(--base-color);
     font-family: 'Helvetica', Tahoma, Geneva, Verdana, sans-serif;
-    margin-top: 30px;
-    margin-left: 80px;
-    margin-right: 80px;
+    font-size: 24px;
 }
 
 /* Code */
 code {
-    border: var(--tertiary-color) 1px solid;
-    border-radius: 8px;
-    box-shadow: 10px 8px 8px var(--shadow);
-    padding: 20px;
+    color: var(--primary-subcolor);
+    white-space: pre;
 }
 
 /* Header */
@@ -60,6 +56,11 @@ h5 {
 h6 {
     color: var(--secondary-color);
     font-size: 36px;
+}
+
+main {
+    margin-top: 64px;
+    padding: 48px;
 }
 
 section {

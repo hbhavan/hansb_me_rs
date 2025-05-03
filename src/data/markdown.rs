@@ -2,19 +2,26 @@ use std::{char, fs::File, io::Read, path::PathBuf};
 
 use dioxus::{logger::tracing::info, prelude::*};
 
-use super::seq::Seq;
+use super::{
+    menu::{MenuItem, MenuMaker},
+    seq::Seq,
+};
 
-pub struct Markdown;
+pub struct Markdown {
+    pub content: Seq<Paragraph>,
+}
 
 #[derive(Clone, Debug)]
 pub enum Paragraph {
     Header(usize, Seq<Text>),
     CodeSnippet(Seq<Text>),
+    CodeBlock(Seq<Seq<Text>>),
     OrderedList(Seq<Seq<Text>>),
     UnorderedList(Seq<Seq<Text>>),
     BlockQuote(Seq<Seq<Text>>),
     Para(Seq<Text>),
     HorizontalRule,
+    LineBreak,
 }
 
 #[derive(Clone, Debug)]
@@ -71,16 +78,18 @@ impl Paragraph {
 
         match rest.first() {
             Some(line) => match Seq::to_char_seq(line).to_slice() {
-                ['#', '#', '#', '#', '#', '#', text @ ..] => {
+                ['#', '#', '#', '#', '#', '#', ' ', text @ ..] => {
                     append_para(Header(6, Text::from_chars(text)))
                 }
-                ['#', '#', '#', '#', '#', text @ ..] => {
+                ['#', '#', '#', '#', '#', ' ', text @ ..] => {
                     append_para(Header(5, Text::from_chars(text)))
                 }
-                ['#', '#', '#', '#', text @ ..] => append_para(Header(4, Text::from_chars(text))),
-                ['#', '#', '#', text @ ..] => append_para(Header(3, Text::from_chars(text))),
-                ['#', '#', text @ ..] => append_para(Header(2, Text::from_chars(text))),
-                ['#', text @ ..] => append_para(Header(1, Text::from_chars(text))),
+                ['#', '#', '#', '#', ' ', text @ ..] => {
+                    append_para(Header(4, Text::from_chars(text)))
+                }
+                ['#', '#', '#', ' ', text @ ..] => append_para(Header(3, Text::from_chars(text))),
+                ['#', '#', ' ', text @ ..] => append_para(Header(2, Text::from_chars(text))),
+                ['#', ' ', text @ ..] => append_para(Header(1, Text::from_chars(text))),
 
                 ['-', ' ', text @ ..] if check_next('-') => append_line(String::from_iter(text)),
                 ['-', ' ', text @ ..] => append_para(UnorderedList(Text::from_seq(
@@ -96,6 +105,14 @@ impl Paragraph {
                     append_para(CodeSnippet(Text::from_chars(&text[..text.len() - 3])))
                 }
 
+                ['`', '`', '`', text @ ..] if curr.len() == 0 => {
+                    append_line(String::from_iter(text))
+                }
+
+                [text @ .., '`', '`', '`'] if curr.len() > 0 => append_para(CodeBlock(
+                    Text::from_seq(curr.append_item(String::from_iter(text))),
+                )),
+
                 ['>', ' ', text @ ..] if check_next('>') => append_line(String::from_iter(text)),
                 ['>', ' ', text @ ..] => append_para(BlockQuote(Text::from_seq(
                     curr.append_item(String::from_iter(text)),
@@ -103,9 +120,16 @@ impl Paragraph {
 
                 ['=', '=', '=', ..] => append_para(HorizontalRule),
 
+                [text @ ..] if text.len() == 0 => append_para(LineBreak),
+
+                [text @ ..] if curr.len() > 0 => append_line(String::from_iter(text)),
+
                 _ => append_para(Para(Text::from_string(line))),
             },
-            None => acc,
+            None => match curr.len() > 0 {
+                true => acc.append_item(Para(Text::from_string(&curr.to_string()))),
+                false => acc,
+            },
         }
     }
 }
@@ -126,6 +150,21 @@ impl Text {
 
     pub fn from_string(line: &str) -> Seq<Text> {
         Self::to_text_rec(Seq::new(), Seq::new(), line, None)
+    }
+
+    pub fn get_text(&self) -> &str {
+        use Text::*;
+
+        match self {
+            Normal(text) => text,
+            Bold(text) => text,
+            Italic(text) => text,
+            BoldItalic(text) => text,
+            Code(text) => text,
+            Struck(text) => text,
+            Link(text, _) => text,
+            Image(text, _) => text,
+        }
     }
 
     fn to_text_rec(acc: Seq<Text>, curr: Seq<char>, rest: &str, prefix: Option<char>) -> Seq<Text> {
@@ -214,28 +253,38 @@ impl Text {
 
 #[allow(dead_code)]
 impl Markdown {
+    pub fn new(content: Seq<Paragraph>) -> Self {
+        Self { content }
+    }
+
     pub fn render_paragraph(paragraph: Paragraph) -> Element {
         use Paragraph::*;
 
         match paragraph {
             Header(size, text) => Self::render_header(size, text),
             CodeSnippet(text) => {
-                rsx! { code { class: "md-code-snippet", {Self::render_texts(text)} }}
+                rsx! { code { class: "md-code-snippet", {Self::render_texts(text)} } }
             }
-            OrderedList(items) => {
-                rsx! { ol { class: "md-ol", {Self::render_list(items)} } }
+            CodeBlock(block) => {
+                rsx! { code { class: "md-code-block", {Self::render_block(block)} } }
             }
-            UnorderedList(items) => {
-                rsx! { ul { class: "md-ul", {Self::render_list(items)} } }
+            OrderedList(list) => {
+                rsx! { ol { class: "md-ol", {Self::render_list(list)} } }
             }
-            BlockQuote(text) => {
-                rsx! { blockquote { class: "md-block-quoute", {Self::render_block_quote(text)} } }
+            UnorderedList(list) => {
+                rsx! { ul { class: "md-ul", {Self::render_list(list)} } }
+            }
+            BlockQuote(block) => {
+                rsx! { blockquote { class: "md-block-quoute", {Self::render_block(block)} } }
             }
             Para(texts) => {
                 rsx! { p { class: "md-para", {Self::render_texts(texts)} } }
             }
             HorizontalRule => {
                 rsx! { hr { class: "md-hr" } }
+            }
+            LineBreak => {
+                rsx! { br {} }
             }
         }
     }
@@ -268,14 +317,21 @@ impl Markdown {
     }
 
     fn render_header(size: usize, text: Seq<Text>) -> Element {
+        let id = text
+            .iter()
+            .map(Text::get_text)
+            .collect::<Vec<_>>()
+            .join("_")
+            .replace(" ", "_");
+
         match size {
-            1 => rsx! { h1 { class: "md-title", {Self::render_texts(text.clone())} } },
-            2 => rsx! { h2 { class: "md-title", {Self::render_texts(text.clone())} } },
-            3 => rsx! { h3 { class: "md-title", {Self::render_texts(text.clone())} } },
-            4 => rsx! { h4 { class: "md-title", {Self::render_texts(text.clone())} } },
-            5 => rsx! { h5 { class: "md-title", {Self::render_texts(text.clone())} } },
-            6 => rsx! { h6 { class: "md-title", {Self::render_texts(text.clone())} } },
-            _ => rsx! { p { class: "md-title", {Self::render_texts(text.clone())} } },
+            1 => rsx! { h1 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            2 => rsx! { h2 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            3 => rsx! { h3 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            4 => rsx! { h4 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            5 => rsx! { h5 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            6 => rsx! { h6 { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
+            _ => rsx! { p { class: "md-title", id: id, {Self::render_texts(text.clone())} } },
         }
     }
 
@@ -287,16 +343,16 @@ impl Markdown {
         }
     }
 
-    fn render_block_quote(items: Seq<Seq<Text>>) -> Element {
+    fn render_block(items: Seq<Seq<Text>>) -> Element {
         rsx! {
             for item in items.iter() {
-                span { class: "md-bq", {Self::render_texts(item.clone())} }
+                span { {Self::render_texts(item.clone())} }
                 br { }
             }
         }
     }
 
-    pub fn example() -> Vec<Paragraph> {
+    pub fn example() -> Self {
         use Paragraph::*;
         use Text::*;
 
@@ -313,10 +369,12 @@ impl Markdown {
 
         let p = Para(Seq::from_vec(vec![sample_text.clone()]));
 
-        return vec![h1, h2, h3, h4, h5, h6, p];
+        let content = Seq::from_vec(vec![h1, h2, h3, h4, h5, h6, p]);
+
+        Self { content }
     }
 
-    pub fn parse_example() -> Vec<Paragraph> {
+    pub fn parse_example() -> Self {
         let sample = "Parse example
             \n*Italic*
             \n**Bold**
@@ -352,19 +410,24 @@ impl Markdown {
             .map(|l| l.to_string())
             .collect();
 
-        let paragraphs = Paragraph::accumulate(Seq::from_vec(lines));
+        let content = Paragraph::accumulate(Seq::from_vec(lines));
 
-        paragraphs.to_vec()
+        Self { content }
     }
 }
 
-#[server]
-pub async fn get_md_file(path: PathBuf) -> Result<String, ServerFnError> {
-    let mut buf = String::from("");
-    info!("Path: {:?}", path);
-
-    match File::open(path).and_then(|mut f| f.read_to_string(&mut buf)) {
-        Ok(_) => Ok(buf),
-        Err(e) => Err(e.into()),
+impl MenuMaker for Markdown {
+    fn to_menu(&self) -> Vec<MenuItem> {
+        self.content
+            .iter()
+            .filter(|p| match p {
+                Paragraph::Header(size, _) if *size == 2 => true,
+                _ => false,
+            })
+            .map(|h| match h {
+                Paragraph::Header(_, text) => MenuItem::from_markdown(text),
+                _ => MenuItem::empty(),
+            })
+            .collect::<Vec<_>>()
     }
 }

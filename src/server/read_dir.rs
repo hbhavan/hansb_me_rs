@@ -1,15 +1,28 @@
-/*
-use std::{char, fs::File, io::Read, path::PathBuf};
+use std::fs::read_dir;
 
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
+
+use crate::data::directory::Directory;
 
 #[server]
-pub async fn get_dir(path: PathBuf) -> Result<String, ServerFnError> {
-    let mut buf = String::from("");
-    info!("Path: {:?}", path);
+pub async fn from_dir(dir: Directory) -> Result<Vec<String>, ServerFnError> {
+    let path = dir.get_path();
 
-    match File::open(path).and_then(|mut f| f.read_to_string(&mut buf)) {
-        Ok(_) => Ok(buf),
-        Err(e) => Err(e.into()),
-    }
-}*/
+    let result = match read_dir(path) {
+        Ok(d) => d
+            .into_iter()
+            .map(|ent| match ent {
+                Ok(e) => e
+                    .path()
+                    .file_name()
+                    .and_then(|s| s.to_str())
+                    .map(|s| String::from(s))
+                    .unwrap_or(String::from("")),
+                Err(_) => String::from(""),
+            })
+            .collect::<Vec<String>>(),
+        Err(_) => Vec::new(),
+    };
+
+    Ok(result)
+}

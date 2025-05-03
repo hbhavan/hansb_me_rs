@@ -1,7 +1,6 @@
 use std::{char, fs::File, io::Read, path::PathBuf};
 
 use dioxus::{logger::tracing::info, prelude::*};
-
 #[server]
 pub async fn get_md_file(path: PathBuf) -> Result<String, ServerFnError> {
     let mut buf = String::from("");

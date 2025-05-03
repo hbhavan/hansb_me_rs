@@ -1,6 +1,7 @@
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::{html::mark, logger::tracing::info, prelude::*};
 
 use crate::{
+    components::menu::*,
     data::{
         markdown::{Markdown, Paragraph},
         seq::Seq,
@@ -14,23 +15,29 @@ pub fn DevLogListing(id: String) -> Element {
 
     let md_text = use_server_future(move || get_md_file(path.clone().into()))?;
 
-    let paragraphs = match md_text() {
+    let markdown = match md_text() {
         Some(value) => match value {
-            Ok(res) => Paragraph::get_paragraphs(&res),
+            Ok(res) => Markdown::new(Paragraph::get_paragraphs(&res)),
             Err(e) => {
                 info!("Error retrieving markdown: {}", e);
-                Seq::from_vec(Markdown::parse_example())
+                Markdown::parse_example()
             }
         },
         None => {
             info!("Markdown not found for {}", id);
-            Seq::from_vec(Markdown::parse_example())
+            Markdown::parse_example()
         }
     };
 
+    let menu = MenuProp::new(&markdown);
+
     rsx! {
-        for p in paragraphs.to_vec() {
-            {Markdown::render_paragraph(p.clone())}
+        Menu { prop: menu }
+        main {
+            class: "md",
+            for p in markdown.content.to_vec() {
+                {Markdown::render_paragraph(p.clone())}
+            }
         }
     }
 }

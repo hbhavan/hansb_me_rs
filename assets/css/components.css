@@ -1,6 +1,10 @@
 /* Code */
 .code-block {
     font-size: x-large;
+    border: var(--tertiary-color) 1px solid;
+    border-radius: 8px;
+    box-shadow: 10px 8px 8px var(--shadow);
+    padding: 20px;
 }
 
 .code-snippet {
@@ -31,8 +35,47 @@
     cursor: pointer;
 }
 
+/* Listing */
+.listing {
+    color: var(--tertiary-color);
+
+}
+
 /* Markdown */
 
+.md {
+    justify-content: center;
+    padding-left: 248;
+}
+
+.md-code {
+    background-color: #1C1C1C;
+}
+
+.md-code-block {
+    background-color: #1C1C1C;
+}
+
+/* Menu */
+
+.menu {
+    position: fixed;
+    top: 180px;
+    left: 32px;
+}
+
+.menu>a {
+    text-decoration: none;
+    color: var(--primary-color)
+}
+
+.menu-item {
+    padding: 2px;
+}
+
+.menu-sub-item {
+    padding: 4px;
+}
 
 
 /* Navbar */
@@ -41,6 +84,7 @@
     flex-direction: row;
     font-size: x-large;
     gap: 64px;
+    position: fixed;
 }
 
 .navbar a {
