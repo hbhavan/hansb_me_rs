@@ -9,6 +9,7 @@ pub struct ListingProp {
     pub path: String,
 }
 
+#[allow(dead_code)]
 impl ListingProp {
     pub fn new(title: &str, path: &str, route: Route) -> Self {
         Self {

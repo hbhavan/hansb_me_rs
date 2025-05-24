@@ -1,5 +1,3 @@
-Sample markdown file!
-
 # Header 1
 ## Header 2
 ### Header 3
@@ -45,8 +43,6 @@ ___Bold Italic___
 `Code`
 
 [Website](https://hansb.me)
-
-![evil_ass_pikachu.png](Evil ass pikachu)
 
 Sample *text* sample `text`
 Sample **text** sample ___text___ sample

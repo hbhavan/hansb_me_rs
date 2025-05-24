@@ -44,8 +44,7 @@
 /* Markdown */
 
 .md {
-    justify-content: center;
-    padding-left: 248;
+    padding-left: 248px;
 }
 
 .md-code {
@@ -59,32 +58,41 @@
 /* Menu */
 
 .menu {
+    border-right: var(--primary-color) 2px solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    max-width: 200px;
     position: fixed;
+    padding: 4px;
     top: 180px;
     left: 32px;
 }
 
 .menu>a {
+    color: var(--primary-color);
     text-decoration: none;
-    color: var(--primary-color)
 }
 
-.menu-item {
+.menu-main {
+    font-size: 32px;
     padding: 2px;
 }
 
-.menu-sub-item {
+.menu-sub {
+    font-size: 24;
     padding: 4px;
 }
 
 
 /* Navbar */
 .navbar {
+    background-color: var(--bg-color);
     display: flex;
     flex-direction: row;
     font-size: x-large;
     gap: 64px;
-    position: fixed;
+    padding: 32px;
 }
 
 .navbar a {

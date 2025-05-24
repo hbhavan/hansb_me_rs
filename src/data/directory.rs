@@ -5,6 +5,7 @@ pub enum Directory {
     Markdown,
 }
 
+#[allow(dead_code)]
 impl Directory {
     pub fn get_name(&self) -> &str {
         use Directory::*;

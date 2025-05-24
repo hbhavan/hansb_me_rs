@@ -1,11 +1,8 @@
-use dioxus::{html::mark, logger::tracing::info, prelude::*};
+use dioxus::{logger::tracing::info, prelude::*};
 
 use crate::{
     components::menu::*,
-    data::{
-        markdown::{Markdown, Paragraph},
-        seq::Seq,
-    },
+    data::markdown::{Markdown, Paragraph},
     server::read_md::get_md_file,
 };
 

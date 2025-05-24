@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::data::menu::{MenuItem, MenuMaker};
+use crate::data::menu::{MenuItem, MenuItemType, MenuMaker};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MenuProp {
@@ -22,16 +22,9 @@ pub fn Menu(prop: MenuProp) -> Element {
             class: "menu",
             for item in prop.menu_items {
                 a {
-                    class: "menu-item",
+                    class: item.item_style(),
                     href: item.path,
-                    {item.title}
-                }
-                for sub_item in item.sub_items {
-                    a {
-                        class: "menu-sub-item",
-                        href: sub_item.path,
-                        {sub_item.title}
-                    }
+                    {item.title.clone()}
                 }
             }
         }

@@ -1,9 +1,9 @@
-use std::{char, fs::File, io::Read, path::PathBuf};
+use std::char;
 
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
 
 use super::{
-    menu::{MenuItem, MenuMaker},
+    menu::{MenuItem, MenuItemType, MenuMaker},
     seq::Seq,
 };
 
@@ -421,11 +421,11 @@ impl MenuMaker for Markdown {
         self.content
             .iter()
             .filter(|p| match p {
-                Paragraph::Header(size, _) if *size == 2 => true,
+                Paragraph::Header(size, _) if *size < 3 => true,
                 _ => false,
             })
             .map(|h| match h {
-                Paragraph::Header(_, text) => MenuItem::from_markdown(text),
+                Paragraph::Header(size, text) => MenuItem::from_markdown(*size, text),
                 _ => MenuItem::empty(),
             })
             .collect::<Vec<_>>()

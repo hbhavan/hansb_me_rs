@@ -50,7 +50,7 @@ fn Navbar() -> Element {
                 to: Route::About {},
                 "About"
             },
-        }
+        },
 
         Outlet::<Route> {}
     }
