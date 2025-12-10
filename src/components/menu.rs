@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::data::menu::{MenuItem, MenuItemType, MenuMaker};
+use crate::data::menu::{MenuItem, MenuMaker};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MenuProp {

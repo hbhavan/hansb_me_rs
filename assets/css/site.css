@@ -19,8 +19,6 @@ body {
     color: var(--base-color);
     font-family: 'Helvetica', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 24px;
-    margin: 0px;
-    padding-left: 24px;
 }
 
 /* Code */

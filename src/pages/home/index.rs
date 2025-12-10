@@ -1,8 +1,12 @@
-use crate::components::{
-    section::{Section, SectionProp},
-    title::*,
+use crate::{
+    components::{
+        key_grid::KeyGrid,
+        section::{Section, SectionProp},
+        title::*,
+    },
+    data::*,
 };
-use dioxus::prelude::*;
+use dioxus::{logger::tracing::info, prelude::*};
 
 #[component]
 pub fn Home() -> Element {
@@ -11,13 +15,19 @@ pub fn Home() -> Element {
 
     let section = SectionProp::new(&section_text());
 
-    rsx! {
-        main {
-            id: "home",
-            Title { prop: title }
-            Title { prop: subTitle }
+    //let mut keylogger = KeyLogger::new("MAIN", "Test");
 
-            Section { prop: section }
+    rsx! {
+        div {
+            main {
+                id: "home",
+                Title { prop: title }
+                Title { prop: subTitle }
+
+                Section { prop: section }
+
+                KeyGrid { }
+            }
         }
     }
 }

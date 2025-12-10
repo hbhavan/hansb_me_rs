@@ -1,4 +1,9 @@
-use std::char;
+use std::{
+    char, env,
+    fs::File,
+    io::Read,
+    path::{Path, PathBuf},
+};
 
 use dioxus::prelude::*;
 
@@ -307,7 +312,7 @@ impl Markdown {
             Struck(text) => rsx! { s { class: "md-struck", {text} } },
             Code(text) => rsx! { code { class: "md-code", {text} } },
             Image(src, alt) => {
-                rsx! { img { class: "md-img", src: src, alt: alt } }
+                rsx! { img { class: "md-img", src: Self::render_image(src), alt: alt } }
             }
             Link(desc, href) => {
                 rsx! { a { class: "md-link", href: href, {desc} } }
@@ -349,6 +354,20 @@ impl Markdown {
                 span { {Self::render_texts(item.clone())} }
                 br { }
             }
+        }
+    }
+
+    fn render_image(src: String) -> String {
+        let mut buf = String::from("");
+
+        let res = match File::open(src).and_then(|mut f| f.read_to_string(&mut buf)) {
+            Ok(_) => Ok(buf),
+            Err(e) => Err(e),
+        };
+
+        match res {
+            Ok(r) => r,
+            Err(e) => String::from(e.to_string()),
         }
     }
 
