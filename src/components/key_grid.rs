@@ -1,12 +1,12 @@
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
 
 use crate::data::{handle_key_down, KeyboardNav};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct GridCell {
+    pub content: String,
     x: usize,
     y: usize,
-    pub content: String,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -38,9 +38,9 @@ impl KeyGridProp {
         let grid = (0..width * height)
             .into_iter()
             .map(|i| {
-                let (x, y) = (i % width, i / height);
-                let content = &(i + 1).to_string();
-                GridCell::new((x, y), content)
+                let (x, y) = (i % width, i / width);
+                let content = (i + 1).to_string();
+                GridCell::new((x, y), &content)
             })
             .collect();
 
@@ -58,8 +58,11 @@ impl KeyGridProp {
             .is_some_and(|curr| cell.coords() == curr)
     }
 
-    pub fn grid(&self) -> &Vec<GridCell> {
-        &self.grid
+    pub fn rows(&self) -> Vec<Vec<GridCell>> {
+        self.grid
+            .chunks(self.width)
+            .map(|x| x.to_vec())
+            .collect::<Vec<_>>()
     }
 
     pub fn in_bounds(&self, x: i32, y: i32) -> bool {
@@ -95,8 +98,8 @@ impl KeyboardNav for KeyGridProp {
 }
 
 #[component]
-pub fn KeyGrid() -> Element {
-    let mut g = use_signal(|| KeyGridProp::new(3, 3));
+pub fn KeyGrid(width: usize, height: usize) -> Element {
+    let mut g = use_signal(|| KeyGridProp::new(width, height));
 
     rsx! {
         div {
@@ -105,15 +108,20 @@ pub fn KeyGrid() -> Element {
             onkeydown: move |e| g.write().handle_key(e),
             div {
                 class: "key-grid",
-                for cell in g.read().grid() {
+                for row in g.read().rows() {
                     div {
-                        class: "key-grid-cell",
-                        {cell.content.clone()},
-                        div {
-                            if g.read().is_active(cell) {
-                                {"!!!"}
+                        class: "key-grid-row",
+                            for cell in row {
+                                div {
+                                    class: "key-grid-cell",
+                                    {cell.content.clone()},
+                                    div {
+                                        if g.read().is_active(&cell) {
+                                            {"!!!"}
+                                        }
+                                    }
+                                }
                             }
-                        }
                     }
                 }
             }

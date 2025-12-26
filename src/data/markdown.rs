@@ -1,16 +1,8 @@
-use std::{
-    char, env,
-    fs::File,
-    io::Read,
-    path::{Path, PathBuf},
-};
+use std::{char, fs::File, io::Read};
 
 use dioxus::prelude::*;
 
-use super::{
-    menu::{MenuItem, MenuItemType, MenuMaker},
-    seq::Seq,
-};
+use crate::data::{menu::*, seq::*};
 
 pub struct Markdown {
     pub content: Seq<Paragraph>,

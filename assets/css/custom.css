@@ -1,6 +1,6 @@
 /* App-wide styling */
 #home>h1 {
     color: transparent;
-    background-image: linear-gradient(180deg, var(--secondary-color) 35%, var(--primary-color) 90%);
+    background-image: var(--prm-sec-gradient);
     background-clip: text;
 }

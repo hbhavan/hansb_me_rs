@@ -24,11 +24,13 @@ pub fn handle_key_down<K: KeyboardNav>(evt: Event<KeyboardData>, key_nav: &mut K
     }
 }
 
+#[allow(dead_code)]
 pub struct KeyLogger {
     page: String,
     location: String,
 }
 
+#[allow(dead_code)]
 impl KeyLogger {
     pub fn new(page: &str, location: &str) -> Self {
         Self {

@@ -1,5 +1,3 @@
-use crate::components::menu::Menu;
-
 use super::{markdown::Text, seq::Seq};
 
 #[derive(Clone, Debug, PartialEq)]

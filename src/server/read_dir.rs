@@ -1,11 +1,10 @@
-use std::fs::read_dir;
-
 use dioxus::prelude::*;
 
 use crate::data::directory::Directory;
 
 #[server]
 pub async fn from_dir(dir: Directory) -> Result<Vec<String>, ServerFnError> {
+    use std::fs::*;
     let path = dir.get_path();
 
     let result = match read_dir(path) {

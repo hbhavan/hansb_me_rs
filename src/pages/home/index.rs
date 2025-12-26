@@ -1,12 +1,9 @@
-use crate::{
-    components::{
-        key_grid::KeyGrid,
-        section::{Section, SectionProp},
-        title::*,
-    },
-    data::*,
+use crate::components::{
+    key_grid::KeyGrid,
+    section::{Section, SectionProp},
+    title::*,
 };
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
 
 #[component]
 pub fn Home() -> Element {
@@ -14,8 +11,6 @@ pub fn Home() -> Element {
     let subTitle = TitleProp::new(TitleSize::Medium, "Hans Bhavan");
 
     let section = SectionProp::new(&section_text());
-
-    //let mut keylogger = KeyLogger::new("MAIN", "Test");
 
     rsx! {
         div {
@@ -26,7 +21,7 @@ pub fn Home() -> Element {
 
                 Section { prop: section }
 
-                KeyGrid { }
+                KeyGrid { width: 5, height: 7 }
             }
         }
     }

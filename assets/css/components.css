@@ -12,17 +12,22 @@
 }
 
 .key-grid {
-    display: grid;
-    grid-template-columns: auto auto auto;
+    gap: 8px;
     padding: 8px;
+    width: min-content;
 }
 
 .key-grid-cell {
+    border: var(--primary-color) 2px solid;
+    border-radius: 8px;
+    /*border-image: radial-gradient(var(--secondary-color) 35%, var(--primary-color) 90%);*/
     height: 2em;
     width: 2em;
-    border: 2px;
-    border-radius: 2px;
-    border-image: radial-gradient(var(--secondary-color) 35%, var(--primary-color) 90%);
+}
+
+.key-grid-row {
+    display: flex;
+    gap: 8px;
 }
 
 .key-listener {
@@ -139,6 +144,32 @@
     cursor: pointer;
     color: var(--primary-subcolor);
 }
+
+.search {
+    background-color: var(--bg-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--primary-subcolor);
+    position: relative;
+    width: max-content;
+}
+
+.search:focus-visible {
+    outline: inset;
+    outline-color: var(--tertiary-color);
+}
+
+.search input::before {
+    color: var(--primary-color);
+    content: "Search";
+    top: 0;
+    left: 0;
+    height: 4px;
+    position: absolute;
+    width: 100%;
+}
+
+.search-label {}
 
 /* Section */
 .title+.section {

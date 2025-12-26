@@ -1,8 +1,14 @@
-use std::{char, fs::File, io::Read, path::PathBuf};
+use std::path::PathBuf;
 
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
+
 #[server]
 pub async fn get_md_file(path: PathBuf) -> Result<String, ServerFnError> {
+    use dioxus::logger::tracing::info;
+    use std::char;
+    use std::fs::File;
+    use std::io::Read;
+
     let mut buf = String::from("");
     info!("Path: {:?}", path);
 

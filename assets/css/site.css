@@ -11,6 +11,8 @@
     --base-color: #FFFFFF;
 
     --shadow: #000000;
+
+    --prm-sec-gradient: linear-gradient(180deg, var(--secondary-color) 35%, var(--primary-color) 90%);
 }
 
 /* Body */
