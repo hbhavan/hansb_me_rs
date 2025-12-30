@@ -8,6 +8,10 @@ pub trait KeyboardNav {
     fn on_space_press(&mut self) {}
 }
 
+pub trait KeyboardSelector {
+    fn on_key_press(&mut self, key: Event<KeyboardData>) {}
+}
+
 pub fn handle_key_down<K: KeyboardNav>(evt: Event<KeyboardData>, key_nav: &mut K) {
     use dioxus::events::Key::Character;
     let key = evt.key();

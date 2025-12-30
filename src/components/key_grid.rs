@@ -85,15 +85,19 @@ impl KeyboardNav for KeyGridProp {
     fn on_j_press(&mut self) {
         self.move_current((0, 1));
     }
+
     fn on_k_press(&mut self) {
         self.move_current((0, -1));
     }
+        
     fn on_l_press(&mut self) {
         self.move_current((1, 0));
     }
+
     fn on_h_press(&mut self) {
         self.move_current((-1, 0));
     }
+
     fn on_space_press(&mut self) {}
 }
 
@@ -111,20 +115,19 @@ pub fn KeyGrid(width: usize, height: usize) -> Element {
                 for row in g.read().rows() {
                     div {
                         class: "key-grid-row",
-                            for cell in row {
-                                div {
-                                    class: "key-grid-cell",
-                                    {cell.content.clone()},
-                                    div {
-                                        if g.read().is_active(&cell) {
-                                            {"!!!"}
-                                        }
-                                    }
-                                }
+                        for cell in row {
+                            div {
+                                class: format!("key-grid-cell{}", active(&g.read(), &cell)),
+                                {cell.content.clone()},
                             }
+                        }
                     }
                 }
             }
         }
     }
+}
+
+fn active<'a>(grid: &'a KeyGridProp, cell: &'a GridCell) -> &'a str  {
+    if grid.is_active(cell) { " grid-active" } else { "" }
 }

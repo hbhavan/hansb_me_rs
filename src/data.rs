@@ -1,5 +1,6 @@
 pub mod directory;
 pub mod id;
+pub mod key_handlers;
 pub mod keyboard_nav;
 pub mod markdown;
 pub mod menu;

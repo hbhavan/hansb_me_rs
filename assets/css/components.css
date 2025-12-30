@@ -1,7 +1,7 @@
 /* Code */
 .code-block {
     font-size: x-large;
-    border: var(--tertiary-color) 1px solid;
+    border: var(--purple-light) 1px solid;
     border-radius: 8px;
     box-shadow: 10px 8px 8px var(--shadow);
     padding: 20px;
@@ -18,16 +18,20 @@
 }
 
 .key-grid-cell {
-    border: var(--primary-color) 2px solid;
+    border: var(--gold) 2px solid;
     border-radius: 8px;
-    /*border-image: radial-gradient(var(--secondary-color) 35%, var(--primary-color) 90%);*/
     height: 2em;
     width: 2em;
+}
+
+.key-grid-cell.grid-active {
+    background-color: var(--purple);
 }
 
 .key-grid-row {
     display: flex;
     gap: 8px;
+    margin-bottom: 8px;
 }
 
 .key-listener {
@@ -38,8 +42,8 @@
 /* Link */
 .link {
     width: 400px;
-    color: var(--secondary-color);
-    border: var(--tertiary-color) 1px solid;
+    color: var(--purple);
+    border: var(--purple-light) 1px solid;
     text-decoration: none;
     text-align: left;
     font-size: x-large;
@@ -55,13 +59,13 @@
 }
 
 .link a:hover {
-    background-color: var(--tertiary-color);
+    background-color: var(--purple-light);
     cursor: pointer;
 }
 
 /* Listing */
 .listing {
-    color: var(--tertiary-color);
+    color: var(--purple-light);
 
 }
 
@@ -82,7 +86,7 @@
 /* Menu */
 
 .menu {
-    border-right: var(--primary-color) 2px solid;
+    border-right: var(--gold) 2px solid;
     display: flex;
     flex-direction: column;
     justify-content: right;
@@ -94,7 +98,7 @@
 }
 
 .menu>a {
-    color: var(--primary-color);
+    color: var(--gold);
     text-decoration: none;
 }
 
@@ -110,7 +114,7 @@
 
 
 /* Navbar */
-.navbar {
+.nav-bar {
     display: flex;
     flex-direction: row;
     gap: 2em;
@@ -120,18 +124,14 @@
     top: 1em;
 }
 
-.navbar a {
-    color: var(--secondary-color);
-    font-size: 32px;
+.nav-link {
     padding-bottom: 6px;
     position: relative;
-    text-decoration: none;
-    transition: color 0.2s ease;
     width: max-content;
 }
 
-.navbar a::after {
-    background: var(--tertiary-color);
+.nav-link::after {
+    background: var(--purple-light);
     bottom: 0;
     content: '';
     height: 4px;
@@ -140,27 +140,50 @@
     width: 100%;
 }
 
-.navbar a:hover {
+.nav-link a {
+    color: var(--purple);
+    font-size: 32px;
+    margin-right: 8px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-link>[aria-current="page"] {
+    color: var(--gold);
+    pointer-events: none;
+}
+
+.nav-link a:hover {
     cursor: pointer;
-    color: var(--primary-subcolor);
+    color: var(--gold-light);
+}
+
+.nav-link>span {
+    color: grey;
+    font-size: 1.2rem;
+}
+
+.nav-link .selected {
+    color: white;
+    font-size: 1.6rem;
 }
 
 .search {
     background-color: var(--bg-color);
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--gold);
     border-radius: 8px;
-    color: var(--primary-subcolor);
+    color: var(--gold-light);
     position: relative;
     width: max-content;
 }
 
 .search:focus-visible {
     outline: inset;
-    outline-color: var(--tertiary-color);
+    outline-color: var(--purple-light);
 }
 
 .search input::before {
-    color: var(--primary-color);
+    color: var(--gold);
     content: "Search";
     top: 0;
     left: 0;

@@ -22,6 +22,7 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: SITE_CSS }
         document::Link { rel: "stylesheet", href: COMPONENT_CSS }
         document::Link { rel: "stylesheet", href: CUSTOM_CSS }
+
         Router::<Route> { }
     }
 }

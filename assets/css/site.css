@@ -1,18 +1,17 @@
 :root {
     --bg-color: #1C1C1C;
 
-    --primary-color: #DBA453;
-    --primary-subcolor: #FFCC84;
+    --gold: #DBA453;
+    --gold-light: #FFCC84;
 
-    --secondary-color: #8484FF;
-
-    --tertiary-color: #BEBAFF;
+    --purple: #8484FF;
+    --purple-light: #BEBAFF;
 
     --base-color: #FFFFFF;
 
     --shadow: #000000;
 
-    --prm-sec-gradient: linear-gradient(180deg, var(--secondary-color) 35%, var(--primary-color) 90%);
+    --prm-sec-gradient: linear-gradient(180deg, var(--purple) 35%, var(--gold) 90%);
 }
 
 /* Body */
@@ -25,38 +24,38 @@ body {
 
 /* Code */
 code {
-    color: var(--primary-subcolor);
+    color: var(--gold-light);
     white-space: pre;
 }
 
 /* Header */
 h1 {
-    color: var(--primary-color);
+    color: var(--gold);
     font-size: 108px;
 }
 
 h2 {
-    color: var(--tertiary-color);
+    color: var(--purple-light);
     font-size: 96px;
 }
 
 h3 {
-    color: var(--secondary-color);
+    color: var(--purple);
     font-size: 72px;
 }
 
 h4 {
-    color: var(--primary-color);
+    color: var(--gold);
     font-size: 64px;
 }
 
 h5 {
-    color: var(--tertiary-color);
+    color: var(--purple-light);
     font-size: 48px;
 }
 
 h6 {
-    color: var(--secondary-color);
+    color: var(--purple);
     font-size: 36px;
 }
 
