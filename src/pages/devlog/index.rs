@@ -12,8 +12,6 @@ use crate::{
 
 #[component]
 pub fn DevLog() -> Element {
-    let title = TitleProp::new(TitleSize::Big, "Dev Log");
-
     let markdown_listings = use_server_future(move || from_dir(Directory::Markdown))?;
 
     let listings = match markdown_listings() {
@@ -35,7 +33,7 @@ pub fn DevLog() -> Element {
     rsx! {
         main {
             id: "dev-log",
-            Title { prop: title }
+            PageTitle { text: "Dev Log", size: TitleSize::Big }
             ul {
                 for listing in listings {
                     li {

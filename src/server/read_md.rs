@@ -14,6 +14,6 @@ pub async fn get_md_file(path: PathBuf) -> Result<String, ServerFnError> {
 
     match File::open(path).and_then(|mut f| f.read_to_string(&mut buf)) {
         Ok(_) => Ok(buf),
-        Err(e) => Err(e.into()),
+        Err(_) => Err(ServerFnError::new("Could not open file")),
     }
 }

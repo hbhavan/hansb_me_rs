@@ -5,7 +5,7 @@ WORKDIR /app
 
 FROM chef AS planner
 COPY . .
-RUN cargo chef prepare ---recipe-path recipe.json
+RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
@@ -17,11 +17,11 @@ RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ca
 RUN cargo binstall dioxus-cli --root /.cargo -y --force
 ENV PATH="/.cargo/bin:$PATH"
 
-RUN dx bundle -web
+RUN dx bundle --web
 
 FROM chef AS runtime
 
-COPY --from=builder /app/target/dx/hot_dog/release/web/ /usr/local/app
+COPY --from=builder /app/target/dx/hansb_me_3/release/web/ /usr/local/app
 
 ENV PORT=8080
 ENV IP=0.0.0.0

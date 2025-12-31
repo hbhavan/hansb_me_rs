@@ -1,8 +1,6 @@
-use std::fmt::Debug;
 
 use dioxus::prelude::*;
 
-use crate::data::Searchable;
 
 #[component]
 pub fn Search() -> Element {

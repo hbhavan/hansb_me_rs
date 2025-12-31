@@ -1,11 +1,5 @@
 use dioxus::prelude::*;
 
-#[derive(Props, Clone, PartialEq)]
-pub struct TitleProp {
-    pub size: TitleSize,
-    pub text: String,
-}
-
 #[allow(dead_code)]
 #[derive(Clone, PartialEq)]
 pub enum TitleSize {
@@ -17,21 +11,12 @@ pub enum TitleSize {
     Tiny,
 }
 
-impl TitleProp {
-    pub fn new(size: TitleSize, text: &str) -> Self {
-        TitleProp {
-            size,
-            text: text.to_string(),
-        }
-    }
-}
-
 #[component]
-pub fn Title(prop: TitleProp) -> Element {
+pub fn PageTitle(text: String, size: TitleSize) -> Element {
     rsx! {
         Header {
-            text: prop.text,
-            size: prop.size
+            text: text,
+            size: size
         }
     }
 }

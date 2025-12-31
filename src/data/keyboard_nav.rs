@@ -1,4 +1,4 @@
-use dioxus::{html::KeyboardData, logger::tracing::info, prelude::Event};
+use dioxus::{html::KeyboardData, logger::tracing::info, prelude::*};
 
 pub trait KeyboardNav {
     fn on_j_press(&mut self) {}
@@ -9,14 +9,13 @@ pub trait KeyboardNav {
 }
 
 pub trait KeyboardSelector {
-    fn on_key_press(&mut self, key: Event<KeyboardData>) {}
+    fn on_key_press(&mut self, _key: Event<KeyboardData>) {}
 }
 
 pub fn handle_key_down<K: KeyboardNav>(evt: Event<KeyboardData>, key_nav: &mut K) {
-    use dioxus::events::Key::Character;
     let key = evt.key();
 
-    if let Character(k) = key {
+    if let Key::Character(k) = key {
         match k.to_uppercase().as_str() {
             "J" => key_nav.on_j_press(),
             "K" => key_nav.on_k_press(),
