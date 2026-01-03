@@ -11,12 +11,8 @@ pub struct ListingProp {
 
 #[allow(dead_code)]
 impl ListingProp {
-    pub fn new(title: &str, path: &str, route: Route) -> Self {
-        Self {
-            title: title.to_string(),
-            path: path.to_lowercase().to_string(),
-            route,
-        }
+    pub fn new(title: String, path: String, route: Route) -> Self {
+        Self { title, path, route }
     }
 
     pub fn from_dir(dirs: Vec<String>, route_fn: fn(&str) -> Route) -> Vec<ListingProp> {

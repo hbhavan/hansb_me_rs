@@ -1,5 +1,3 @@
-use super::{markdown::Text, seq::Seq};
-
 #[derive(Clone, Debug, PartialEq)]
 pub enum MenuItemType {
     Main,
@@ -29,22 +27,6 @@ impl MenuItem {
 
     pub fn empty() -> Self {
         Self::new("", "", MenuItemType::Main)
-    }
-
-    pub fn from_markdown(size: usize, text: &Seq<Text>) -> Self {
-        let content = text
-            .iter()
-            .map(|t| t.get_text().to_string())
-            .collect::<Vec<_>>();
-        let title = content.join(" ");
-        let path = format!("#{}", content.join("_").replace(" ", "_"));
-        let menu_item_type = match size {
-            1 => MenuItemType::Main,
-            2 => MenuItemType::Sub,
-            _ => MenuItemType::Main,
-        };
-
-        Self::new(&title, &path, menu_item_type)
     }
 
     pub fn item_style(&self) -> String {

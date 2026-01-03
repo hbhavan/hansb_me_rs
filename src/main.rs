@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 mod components;
 mod data;
 mod pages;
+#[cfg(feature = "server")]
 mod server;
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");

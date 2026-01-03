@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use dioxus::logger::tracing::info;
 use dioxus::prelude::*;
 
@@ -8,6 +10,7 @@ use crate::pages::devlog::index::DevLog;
 use crate::pages::error::index::ErrorPage;
 use crate::pages::home::index::Home;
 use crate::pages::projects::index::Projects;
+use crate::pages::projects::project::ProjectContent;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -23,6 +26,8 @@ pub enum Route {
 
     #[route("/projects")]
     Projects,
+    #[route("/projects/:id")]
+    ProjectContent { id: String },
 
     #[route("/about")]
     About,

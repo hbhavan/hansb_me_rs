@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 
 use crate::data::{menu::*, seq::*};
 
+#[derive(Clone)]
 pub struct Markdown {
     pub content: Seq<Paragraph>,
 }
@@ -250,6 +251,12 @@ impl Text {
 
 #[allow(dead_code)]
 impl Markdown {
+    pub fn from_string(s: String) -> Self {
+        let content = Paragraph::get_paragraphs(&s);
+
+        Self { content }
+    }
+
     pub fn new(content: Seq<Paragraph>) -> Self {
         Self { content }
     }
@@ -436,9 +443,23 @@ impl MenuMaker for Markdown {
                 _ => false,
             })
             .map(|h| match h {
-                Paragraph::Header(size, text) => MenuItem::from_markdown(*size, text),
+                Paragraph::Header(size, text) => to_menu_item(*size, text),
                 _ => MenuItem::empty(),
             })
             .collect::<Vec<_>>()
+    }
+}
+
+fn to_menu_item(size: usize, text: &Seq<Text>) -> MenuItem {
+    let content = text
+        .iter()
+        .map(|t| t.get_text().to_string())
+        .collect::<Vec<_>>();
+
+    let title = content.join(" ");
+    let path = format!("#{}", content.join("_").replace(" ", "_"));
+    match size {
+        2 => MenuItem::sub_item(&title, &path),
+        _ => MenuItem::main_item(&title, &path),
     }
 }

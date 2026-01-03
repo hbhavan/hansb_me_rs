@@ -173,26 +173,34 @@
     border: 2px solid var(--gold);
     border-radius: 8px;
     color: var(--gold-light);
+    font-size: 2rem;
+    padding: 16px;
+    width: 50vw;
+    height: 2rem;
+}
+
+.search:focus-visible {
+    outline: none;
+    outline-color: var(--bg-color);
+}
+
+.search-group {
     position: relative;
     width: max-content;
 }
 
-.search:focus-visible {
-    outline: inset;
-    outline-color: var(--purple-light);
-}
-
-.search input::before {
+.search-label {
+    background-color: var(--bg-color);
     color: var(--gold);
-    content: "Search";
-    top: 0;
-    left: 0;
-    height: 4px;
+    user-select: none;
+    top: -1rem;
+    left: 1rem;
+    height: min-content;
+    padding: 4px;
     position: absolute;
-    width: 100%;
+    width: min-content;
+    z-index: 1;
 }
-
-.search-label {}
 
 /* Section */
 .title+.section {

@@ -3,30 +3,47 @@ use dioxus::{logger::tracing::info, prelude::*};
 use crate::{
     components::menu::*,
     data::markdown::{Markdown, Paragraph},
-    server::read_md::get_md_file,
 };
 
 #[component]
 pub fn DevLogListing(id: String) -> Element {
-    let path = format!("./store/markdown/{}/{}.md", id, id).to_string();
+    rsx! {
+        if cfg!(feature = "server") {
+            DevLogListingSrv { id: id }
+        } else {
+            div { }
+        }
+    }
+}
 
-    let md_text = use_server_future(move || get_md_file(path.clone().into()))?;
+#[component]
+fn DevLogListingSrv(id: String) -> Element {
+    let mut menu = MenuProp { menu_items: vec![] };
+    let mut markdown = Markdown::parse_example();
 
-    let markdown = match md_text() {
-        Some(value) => match value {
-            Ok(res) => Markdown::new(Paragraph::get_paragraphs(&res)),
-            Err(e) => {
-                info!("Error retrieving markdown: {}", e);
+    #[cfg(feature = "server")]
+    {
+        use crate::server::read_md::get_md_file;
+
+        let path = format!("./store/markdown/{}/{}.md", id, id).to_string();
+
+        let md_text = use_server_future(move || get_md_file(path.clone().into()))?;
+
+        markdown = match md_text() {
+            Some(value) => match value {
+                Ok(res) => Markdown::new(Paragraph::get_paragraphs(&res)),
+                Err(e) => {
+                    info!("Error retrieving markdown: {}", e);
+                    Markdown::parse_example()
+                }
+            },
+            None => {
+                info!("Markdown not found for {}", id);
                 Markdown::parse_example()
             }
-        },
-        None => {
-            info!("Markdown not found for {}", id);
-            Markdown::parse_example()
-        }
-    };
-
-    let menu = MenuProp::new(&markdown);
+        };
+        menu = MenuProp::new(&markdown);
+    }
 
     rsx! {
         Menu { prop: menu }
