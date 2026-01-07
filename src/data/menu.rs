@@ -11,8 +11,14 @@ pub struct MenuItem {
     menu_item_type: MenuItemType,
 }
 
-pub trait MenuMaker {
+pub trait MenuMaker: Clone + PartialEq + 'static {
     fn to_menu(&self) -> Vec<MenuItem>;
+}
+
+impl MenuMaker for Vec<MenuItem> {
+    fn to_menu(&self) -> Vec<MenuItem> {
+        self.clone()
+    }
 }
 
 #[allow(dead_code)]

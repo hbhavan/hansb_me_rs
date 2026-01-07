@@ -1,7 +1,4 @@
-use crate::{
-    components::{section::Section, title::*},
-    data::key_handlers::KeyEvents,
-};
+use crate::{components::*, data::key_handlers::KeyEvents};
 use dioxus::{logger::tracing::info, prelude::*};
 
 #[component]
@@ -25,8 +22,7 @@ pub fn Home() -> Element {
             tabindex: 0,
             class: "key-listener",
             onkeydown: move |e| key_events.act(&e),
-            main {
-                id: "home",
+            main { id: "home",
                 PageTitle { text: "Hans<B>.me", size: TitleSize::Big }
                 PageTitle { text: "Hans Bhavan", size: TitleSize::Medium }
 

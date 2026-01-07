@@ -1,18 +1,11 @@
-use std::sync::Arc;
-
 use dioxus::logger::tracing::info;
 use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::data::KeyboardSelector;
-use crate::pages::about::index::About;
-use crate::pages::devlog::content::DevLogListing;
-use crate::pages::devlog::index::DevLog;
-use crate::pages::error::index::ErrorPage;
-use crate::pages::home::index::Home;
-use crate::pages::projects::index::Projects;
-use crate::pages::projects::project::ProjectContent;
+use crate::pages::*;
 
-#[derive(Debug, Clone, Routable, PartialEq)]
+#[derive(Debug, Clone, Routable, PartialEq, Serialize, Deserialize)]
 #[rustfmt::skip]
 pub enum Route {
     #[layout(Navbar)]
@@ -99,13 +92,9 @@ fn Navbar() -> Element {
                             to: nav_link.route,
                             {nav_link.text}
                         }
-                        if nav_link.selected {
-                            span {
-                                class: "selected",
-                                {format!("[{}]", nav_link.key)}
-                            }
-                        } else {
-                            span { {format!("[{}]", nav_link.key)} }
+                        span {
+                            class: if nav_link.selected { "selected" },
+                            {format!("[{}]", nav_link.key)}
                         }
                     }
                 }

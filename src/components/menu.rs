@@ -1,30 +1,21 @@
 use dioxus::prelude::*;
 
-use crate::data::menu::{MenuItem, MenuMaker};
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct MenuProp {
-    pub menu_items: Vec<MenuItem>,
-}
-
-impl MenuProp {
-    pub fn new(menu: &impl MenuMaker) -> Self {
-        Self {
-            menu_items: menu.to_menu(),
-        }
-    }
-}
+use crate::data::menu::MenuMaker;
 
 #[component]
-pub fn Menu(prop: MenuProp) -> Element {
+pub fn Menu<T: MenuMaker>(menu: T) -> Element {
+    let menu_items = menu.to_menu();
+
     rsx! {
-        div {
-            class: "menu",
-            for item in prop.menu_items {
-                a {
-                    class: item.item_style(),
-                    href: item.path,
-                    {item.title.clone()}
+        if menu_items.len() > 0 {
+            div {
+                class: "menu",
+                for item in menu_items {
+                    a {
+                        class: item.item_style(),
+                        href: item.path,
+                        {item.title.clone()}
+                    }
                 }
             }
         }

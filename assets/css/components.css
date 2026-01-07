@@ -1,3 +1,28 @@
+/* Badge */
+.badge {
+    align-items: center;
+    border: solid;
+    border-color: var(--gold-light);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    padding: 0.2em;
+    display: flex;
+    flex-direction: row;
+    width: 12em;
+}
+
+.badge-icon {
+    background-color: var(--bg-color);
+    border-radius: 0.5rem;
+    width: 50px;
+    height: 50px;
+    justify-content: flex-start;
+}
+
+.listing-label {
+    justify-content: flex-end;
+}
+
 /* Code */
 .code-block {
     font-size: x-large;
@@ -11,6 +36,7 @@
     font-size: medium;
 }
 
+/* Key Grid */
 .key-grid {
     gap: 8px;
     padding: 8px;
@@ -65,12 +91,11 @@
 
 /* Listing */
 .listing {
+    display: flex;
     color: var(--purple-light);
-
 }
 
 /* Markdown */
-
 .md {
     padding-left: 248px;
 }
@@ -168,6 +193,7 @@
     font-size: 1.6rem;
 }
 
+/* Search */
 .search {
     background-color: var(--bg-color);
     border: 2px solid var(--gold);

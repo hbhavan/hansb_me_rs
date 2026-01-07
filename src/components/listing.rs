@@ -1,39 +1,50 @@
+use std::sync::Arc;
+
 use dioxus::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use super::navbar::Route;
 
-#[derive(Clone, Debug, PartialEq)]
-pub struct ListingProp {
+pub trait Listable: Clone + PartialEq + 'static {
+    fn listings(&self) -> Vec<Listing>;
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Listing {
+    id: Arc<str>,
     pub route: Route,
     pub title: String,
-    pub path: String,
 }
 
 #[allow(dead_code)]
-impl ListingProp {
-    pub fn new(title: String, path: String, route: Route) -> Self {
-        Self { title, path, route }
+impl Listing {
+    pub fn new(id: Arc<str>, title: String, route: Route) -> Self {
+        Self { id, title, route }
     }
 
-    pub fn from_dir(dirs: Vec<String>, route_fn: fn(&str) -> Route) -> Vec<ListingProp> {
-        dirs.iter()
-            .filter(|ent| ent.len() > 0)
-            .map(|ent| ListingProp {
-                title: ent.to_uppercase(),
-                path: ent.to_lowercase(),
-                route: route_fn(&ent),
-            })
-            .collect::<Vec<ListingProp>>()
+    pub fn id(&self) -> Arc<str> {
+        self.id.clone()
     }
 }
 
+impl Listable for Vec<Listing> {
+    fn listings(&self) -> Vec<Listing> {
+        self.clone()
+    }
+}
+
+
 #[component]
-pub fn Listing(prop: ListingProp) -> Element {
+pub fn Listings<T: Listable>(listable: T, children: Element) -> Element {
     rsx! {
-        Link {
-            class: "listing",
-            to: prop.route,
-            {prop.title}
+        for listing in listable.listings() {
+            Link {
+                class: "listing",
+                id: listing.id().as_ref().to_string(),
+                to: listing.route,
+                {listing.title}
+            }
+            {children.clone()}
         }
     }
 }

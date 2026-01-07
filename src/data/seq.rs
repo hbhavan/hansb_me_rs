@@ -1,6 +1,6 @@
 use std::{slice::Iter, sync::Arc, usize};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Seq<T: Clone> {
     items: Arc<[T]>,
 }

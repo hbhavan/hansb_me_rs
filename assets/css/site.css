@@ -14,6 +14,11 @@
     --prm-sec-gradient: linear-gradient(180deg, var(--purple) 35%, var(--gold) 90%);
 }
 
+a {
+    text-decoration: none;
+    color: var(--purple);
+}
+
 /* Body */
 body {
     background-color: var(--bg-color);

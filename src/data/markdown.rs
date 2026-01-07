@@ -2,14 +2,14 @@ use std::{char, fs::File, io::Read};
 
 use dioxus::prelude::*;
 
-use crate::data::{menu::*, seq::*};
+use crate::data::*;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Markdown {
     pub content: Seq<Paragraph>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Paragraph {
     Header(usize, Seq<Text>),
     CodeSnippet(Seq<Text>),
@@ -22,7 +22,7 @@ pub enum Paragraph {
     LineBreak,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Text {
     Italic(String),
     Bold(String),

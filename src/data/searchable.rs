@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-pub trait Searchable: SearchItem + Clone + PartialEq + Debug {}
+pub trait Searchable: SearchItem + Clone + PartialEq + Debug + 'static {}
 
 pub trait SearchItem {
     fn text(&self) -> &String;

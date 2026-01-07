@@ -1,9 +1,6 @@
-use dioxus::{logger::tracing::info, prelude::*};
+use dioxus::prelude::*;
 
-use crate::{
-    components::menu::*,
-    data::markdown::{Markdown, Paragraph},
-};
+use crate::{components::*, data::*};
 
 #[component]
 pub fn DevLogListing(id: String) -> Element {
@@ -16,14 +13,16 @@ pub fn DevLogListing(id: String) -> Element {
     }
 }
 
+#[allow(unused_mut)]
 #[component]
 fn DevLogListingSrv(id: String) -> Element {
-    let mut menu = MenuProp { menu_items: vec![] };
+    let mut menu: Vec<MenuItem> = vec![];
     let mut markdown = Markdown::parse_example();
 
     #[cfg(feature = "server")]
     {
-        use crate::server::read_md::get_md_file;
+        use crate::{data::menu::MenuMaker, server::read_md::get_md_file};
+        use dioxus::{html::mark, logger::tracing::info};
 
         let path = format!("./store/markdown/{}/{}.md", id, id).to_string();
 
@@ -42,11 +41,11 @@ fn DevLogListingSrv(id: String) -> Element {
                 Markdown::parse_example()
             }
         };
-        menu = MenuProp::new(&markdown);
+        menu = markdown.to_menu();
     }
 
     rsx! {
-        Menu { prop: menu }
+        Menu { menu: menu }
         main {
             class: "md",
             for p in markdown.content.to_vec() {
