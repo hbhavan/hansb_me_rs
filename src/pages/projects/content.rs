@@ -1,8 +1,11 @@
+use std::ops::Deref;
+
 use chrono::NaiveDate;
+use dioxus::prelude::*;
 
 use crate::{
-    components::{Listable, Listing, navbar::Route},
-    data::{markdown::Markdown, skill::Skill},
+    components::{Badges, Listable, Listing, navbar::Route},
+    data::{markdown::Markdown, searchable::{SearchItem, Searchable}, skill::Skill},
     pages::projects::content::{rpc_bot::RPCBot, rpc_gg::RPCGG, test::TestProject},
 };
 
@@ -22,7 +25,7 @@ impl Project {
         self.project_id.clone()
     }
 
-    pub fn get_listing(project_data: impl ProjectData) -> (Listing, Vec<Skill>) {
+    pub fn get_listing(project_data: &dyn ProjectData) -> (Listing, Vec<Skill>) {
         let project_id = project_data.project_id();
         let title = project_data.title();
         let skills = project_data.skills();
@@ -36,7 +39,7 @@ impl Project {
         (lisitng, skills)
     }
 
-    pub fn from_project_data(project_data: impl ProjectData) -> Self {
+    pub fn from_project_data(project_data: &dyn ProjectData) -> Self {
         let project_id = project_data.project_id();
         let title = project_data.title();
         let link = project_data.link();
@@ -121,34 +124,51 @@ impl Status {
     }
 }
 
-#[derive(Clone, PartialEq)]
-pub struct ProjectListings;
+impl Listable for (Listing, Vec<Skill>) {
+    fn to_listing(&self) -> Listing {
+        self.0.clone()
+    }
 
-fn to_listing<T: ProjectData>(projects: Vec<T>) -> Vec<Listing> {
-    let route = |p: &T| Route::ProjectContent { id: p.project_id() };
+    fn display(&self) -> dioxus::prelude::Element {
+        rsx! {
+            Badges { badge_items: self.1.clone() }
+        }
+    }
+}
 
-    let listings: Vec<Listing> = projects
-        .iter()
-        .map(|p| Listing::new(p.project_id().as_str().into(), p.title(), route(p)))
-        .collect();
+impl SearchItem for (Listing, Vec<Skill>) {
+    fn text(&self) -> &String {
+        &self.0.title
+    }
 
-    listings
+    fn value(&self) -> String {
+        self.0.id().to_string()
+    }
+}
+
+impl Searchable for (Listing, Vec<Skill>) { }
+
+pub fn projects() -> Vec<Box<dyn ProjectData>> {
+    vec![
+        Box::new(RPCBot),
+        Box::new(RPCGG),
+        Box::new(TestProject),
+    ]
 }
 
 pub fn project_listings() -> Vec<(Listing, Vec<Skill>)> {
-    vec![
-        Project::get_listing(RPCBot),
-        Project::get_listing(RPCGG),
-        Project::get_listing(TestProject)]
+    projects()
+        .iter()
+        .map(|x| Project::get_listing(x.deref()))
+        .collect()
 }
 
-pub fn projects() -> Vec<Project> {
-    vec![Project::from_project_data(RPCBot), Project::from_project_data(RPCGG),
-        Project::from_project_data(TestProject)]
-}
 
 pub fn get_project_by_id(id: String) -> Option<Project> {
-    projects().iter().find(|x| x.id() == id).cloned()
+    projects()
+        .iter()
+        .find(|x| x.project_id() == id)
+        .map(|x| Project::from_project_data(x.deref()))
 }
 
 mod rpc_bot;

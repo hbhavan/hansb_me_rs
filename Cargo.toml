@@ -10,16 +10,12 @@ edition = "2021"
 chrono = "0.4.42"
 dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
 futures = "0.3.31"
-postgres = { version = "0.19.12", optional = true }
-sea-orm = { version = "2.0.0-rc", features = ["sqlx-postgres", "runtime-tokio-native-tls", "macros", "mock", "debug-print", "with-uuid"], optional = true } 
 serde = { version = "1.0.219", features = ["derive", "rc"] }
 
 [features]
-default = []
+default = ["web"]
 web = ["dioxus/web"]
-server = ["dioxus/server", "dep:postgres", "dep:sea-orm" ]
-postgres = ["dep:postgres"]
-sea-orm = ["dep:sea-orm"]
+server = ["dioxus/server" ]
 
 [profile.wasm-dev]
 inherits = "dev"

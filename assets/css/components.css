@@ -5,22 +5,23 @@
     border-color: var(--gold-light);
     border-radius: 0.5rem;
     box-shadow: var(--shadow);
-    padding: 0.2em;
     display: flex;
     flex-direction: row;
-    width: 12em;
+    font-family: 'Space Mono', monospace;
+    justify-content: space-between;
+    max-width: 10em;
+    min-width: 10em;
+}
+
+.badge-container {
+    display: flex;
 }
 
 .badge-icon {
     background-color: var(--bg-color);
     border-radius: 0.5rem;
-    width: 50px;
-    height: 50px;
-    justify-content: flex-start;
-}
-
-.listing-label {
-    justify-content: flex-end;
+    width: 30px;
+    height: 30px;
 }
 
 /* Code */
@@ -93,6 +94,7 @@
 .listing {
     display: flex;
     color: var(--purple-light);
+    justify-content: space-between;
 }
 
 /* Markdown */

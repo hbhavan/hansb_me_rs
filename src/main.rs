@@ -14,6 +14,10 @@ const CUSTOM_CSS: Asset = asset!("/assets/css/custom.css");
 
 fn main() {
     dioxus::launch(App);
+
+    if cfg!(feature = "server") {
+
+    }
 }
 
 #[component]
@@ -24,6 +28,6 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: COMPONENT_CSS }
         document::Link { rel: "stylesheet", href: CUSTOM_CSS }
 
-        Router::<Route> { }
+        Router::<Route> {}
     }
 }

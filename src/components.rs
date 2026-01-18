@@ -9,8 +9,9 @@ pub mod section;
 pub mod title;
 pub mod badge;
 
+pub use badge::*;
 pub use listing::*;
 pub use menu::*;
+pub use search::*;
 pub use section::*;
 pub use title::*;
-pub use badge::*;

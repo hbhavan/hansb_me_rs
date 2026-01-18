@@ -1,24 +1,10 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::{search::Search, *},
-    pages::projects::content::{project_listings},
+    components::*, 
     data::*,
+    pages::projects::content::{project_listings}
 };
-
-trait Filterable<T> {
-    fn filt(&mut self, data: Self, item: T);
-}
-
-impl Filterable<Event<FormData>> for Vec<Listing> {
-    fn filt(&mut self, listings: Vec<Listing>, item: Event<FormData>) {
-        *self = listings
-            .iter()
-            .filter(|x| x.id().as_ref().contains(&item.value()))
-            .map(|x| x.to_owned())
-            .collect();
-    }
-}
 
 #[component]
 pub fn Projects() -> Element {
@@ -32,14 +18,7 @@ pub fn Projects() -> Element {
 
             hr {}
 
-            for (listing , skills) in projects.read().clone() {
-                div { class: "listing",
-                    Link { to: listing.route, {listing.title} }
-                    for skill in skills {
-                        Badge { badge_item: skill }
-                    }
-                }
-            }
+            Listings { listings: projects.read().clone() }
         }
     }
 }

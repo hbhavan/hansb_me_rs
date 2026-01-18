@@ -6,7 +6,11 @@ use serde::{Deserialize, Serialize};
 use super::navbar::Route;
 
 pub trait Listable: Clone + PartialEq + 'static {
-    fn listings(&self) -> Vec<Listing>;
+    fn to_listing(&self) -> Listing;
+
+    fn display(&self) -> Element {
+        rsx! {}
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -27,24 +31,33 @@ impl Listing {
     }
 }
 
-impl Listable for Vec<Listing> {
-    fn listings(&self) -> Vec<Listing> {
+impl Listable for Listing {
+    fn to_listing(&self) -> Listing {
         self.clone()
     }
 }
 
 
 #[component]
-pub fn Listings<T: Listable>(listable: T, children: Element) -> Element {
+pub fn Listings<T: Listable>(listings: Vec<T>) -> Element {
     rsx! {
-        for listing in listable.listings() {
-            Link {
-                class: "listing",
-                id: listing.id().as_ref().to_string(),
-                to: listing.route,
-                {listing.title}
+        for listing in listings {
+            div { class: "listing",
+                ListingLink { listing: listing.to_listing() }
+                {listing.display()}
             }
-            {children.clone()}
+        }
+    }
+}
+
+#[component]
+fn ListingLink(listing: Listing) -> Element {
+    rsx! {
+        Link {
+            class: "listing-link",
+            id: listing.id().as_ref().to_string(),
+            to: listing.route,
+            {listing.title}
         }
     }
 }

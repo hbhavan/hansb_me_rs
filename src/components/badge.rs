@@ -9,6 +9,17 @@ pub trait BadgeItem: Clone + PartialEq + 'static {
 }
 
 #[component]
+pub fn Badges<T: BadgeItem>(badge_items: Vec<T>) -> Element {
+    rsx! {
+        div { class: "badge-container",
+            for badge in badge_items {
+                Badge { badge_item: badge }
+            }
+        }
+    }
+}
+
+#[component]
 pub fn Badge<T: BadgeItem>(badge_item: T) -> Element {
     rsx! {
         div { class: "badge", style: badge_item.style(),

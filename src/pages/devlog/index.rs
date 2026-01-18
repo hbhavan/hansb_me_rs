@@ -1,50 +1,56 @@
 use dioxus::prelude::*;
 
-use crate::components::*;
+use crate::{components::*};
 
 #[component]
 pub fn DevLog() -> Element {
+    let md_listings = use_server_future(move || get_devlog_listings())?;
+
+    let listings = match md_listings() {
+        Some(x) => match x {
+            Ok(l) => l,
+            Err(_) => vec![]
+        },
+        None => vec![]
+    };
+
+    let db_lst = use_server_future(move || get_devlog_listings_db())?;
+
+    match db_lst() {
+        Some(_) => info!("Got db"),
+        None => info!("Didn't get db")
+    };
+
     rsx! {
-        DevLogSrv { }
+        main { id: "dev-log",
+            PageTitle { text: "Dev Log", size: TitleSize::Big }
+            Listings { listings }
+        }
     }
 }
 
-#[allow(unused_mut)]
-#[component]
-fn DevLogSrv() -> Element {
-    let mut listings: Vec<Listing> = vec![];
+#[get("/get_devlog_listings")]
+async fn get_devlog_listings() -> Result<Vec<Listing>, ServerFnError> {
+    use crate::{ data::directory::*};
 
-    #[cfg(feature = "server")]
-    {
-        use crate::{
-            data::directory::Directory,
-            server::{devlog::get_listings, read_dir::from_dir},
-        };
-        use dioxus::logger::tracing::info;
-        info!("Devlog Server");
+    let directory = Directory::Markdown;
+    let listings = directory.listings();
 
-        let markdown_listings = use_server_future(move || from_dir(Directory::Markdown))?;
+    Ok(listings)
+}
 
-        listings = match markdown_listings() {
-            Some(value) => match value {
-                Ok(res) => res,
-                Err(e) => {
-                    info!("Error getting listings: {}", e);
-                    Vec::new()
-                }
-            },
-            None => {
-                info!("No results returned");
-                Vec::new()
-            }
-        };
-    }
+#[get("/get_devlog_listings_db")]
+async fn get_devlog_listings_db() -> Result<Vec<Listing>, ServerFnError> {
+    // info!("Connecting to db");
+    // let (user, pass, host) = ("postgres", "6156", "localhost");
+    // let conn = format!("postgres://{user}:{pass}@{host}/postgres");
+    //
+    // let db = sea_orm::Database::connect(conn).await;
+    //
+    // match db {
+    //     Ok(_) => info!("Connected"),
+    //     Err(e) => info!("Error: {}", e)
+    // };
 
-    rsx! {
-        main {
-            id: "dev-log",
-            PageTitle { text: "Dev Log", size: TitleSize::Big }
-            Listings { listable: listings }
-        }
-    }
+    return Ok(vec![]);
 }

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fs::DirEntry, sync::Arc};
 
 use serde::{Deserialize, Serialize};
 
@@ -22,10 +22,8 @@ impl Directory {
     pub fn get_path(&self) -> String {
         format!("./store/{}", self.get_name())
     }
-}
 
-impl Listable for Directory {
-    fn listings(&self) -> Vec<Listing> {
+    pub fn listings(&self) -> Vec<Listing> {
         use std::fs::*;
         let path = self.get_path();
 
