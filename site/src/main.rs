@@ -1,9 +1,10 @@
 use components::navbar::Route;
 use dioxus::prelude::*;
 
-mod components;
-mod data;
-mod pages;
+pub mod components;
+pub mod data;
+pub mod pages;
+pub mod utils;
 #[cfg(feature = "server")]
 mod server;
 
@@ -12,12 +13,8 @@ const SITE_CSS: Asset = asset!("/assets/css/site.css");
 const COMPONENT_CSS: Asset = asset!("/assets/css/components.css");
 const CUSTOM_CSS: Asset = asset!("/assets/css/custom.css");
 
-fn main() {
+pub fn main() {
     dioxus::launch(App);
-
-    if cfg!(feature = "server") {
-
-    }
 }
 
 #[component]

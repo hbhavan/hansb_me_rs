@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 
+use writ::utils::menu::*;
 use crate::{
     components::*,
-    data::{markdown::Markdown, menu::MenuMaker},
-    pages::projects::content::{get_project_by_id, Project},
+    pages::projects::content::{Project, get_project_by_id}, utils::render::Render,
 };
 
 #[component]
@@ -12,7 +12,7 @@ pub fn ProjectContent(id: String) -> Element {
 
     rsx! {
         main {
-            ProjectRender { project: project }
+            ProjectRender { project }
         }
     }
 }
@@ -24,11 +24,9 @@ fn ProjectRender(project: Option<Project>) -> Element {
 
         rsx! {
             PageTitle { text: p.title, size: TitleSize::Medium }
-            Menu { menu: menu }
+            Menu { menu }
 
-            for p in p.desc.content.to_vec() {
-                {Markdown::render_paragraph(p.clone())}
-            }
+            {p.desc.render()}
         }
     } else {
         rsx! {

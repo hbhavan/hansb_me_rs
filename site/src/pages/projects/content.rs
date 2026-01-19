@@ -3,9 +3,10 @@ use std::ops::Deref;
 use chrono::NaiveDate;
 use dioxus::prelude::*;
 
+use writ::data::markdown::*;
 use crate::{
     components::{Badges, Listable, Listing, navbar::Route},
-    data::{markdown::Markdown, searchable::{SearchItem, Searchable}, skill::Skill},
+    data::{searchable::{SearchItem, Searchable}, skill::Skill},
     pages::projects::content::{rpc_bot::RPCBot, rpc_gg::RPCGG, test::TestProject},
 };
 

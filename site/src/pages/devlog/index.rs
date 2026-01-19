@@ -31,12 +31,7 @@ pub fn DevLog() -> Element {
 
 #[get("/get_devlog_listings")]
 async fn get_devlog_listings() -> Result<Vec<Listing>, ServerFnError> {
-    use crate::{ data::directory::*};
-
-    let directory = Directory::Markdown;
-    let listings = directory.listings();
-
-    Ok(listings)
+    Ok(vec![])
 }
 
 #[get("/get_devlog_listings_db")]

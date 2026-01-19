@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
-
-use crate::{components::*, data::*};
+use writ::data::markdown::*;
+use writ::utils::menu::*;
+use crate::{components::*, utils::render::Render};
 
 #[component]
 pub fn DevLogListing(id: String) -> Element {
@@ -23,11 +24,7 @@ pub fn DevLogListing(id: String) -> Element {
 
     rsx! {
         Menu { menu }
-        main { class: "md",
-            for p in markdown.content.to_vec() {
-                {Markdown::render_paragraph(p.clone())}
-            }
-        }
+        main { class: "md", {markdown.render()} }
     }
 }
 
