@@ -6,8 +6,8 @@ use crate::data::*;
 pub struct TestProject;
 
 impl ProjectData for TestProject {
-    fn project_id(&self) -> String {
-        "test".into()
+    fn project_id(&self) -> i32 {
+        0
     }
 
     fn title(&self) -> String {

@@ -1,5 +1,8 @@
 :root {
+    --base-color: #FFFFFF;
     --bg-color: #1C1C1C;
+
+    --blue: #5387B5;
 
     --gold: #DBA453;
     --gold-light: #FFCC84;
@@ -7,16 +10,20 @@
     --purple: #8484FF;
     --purple-light: #BEBAFF;
 
-    --base-color: #FFFFFF;
-
     --shadow: #000000;
 
     --prm-sec-gradient: linear-gradient(180deg, var(--purple) 35%, var(--gold) 90%);
+
+    --header-height: 6rem;
 }
 
 a {
     text-decoration: none;
     color: var(--purple);
+}
+
+article {
+    height: 100%;
 }
 
 /* Body */
@@ -25,6 +32,7 @@ body {
     color: var(--base-color);
     font-family: 'Helvetica', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 20px;
+    margin: 0;
 }
 
 /* Code */
@@ -33,39 +41,74 @@ code {
     white-space: pre;
 }
 
+footer {
+    background-color: var(--bg-color);
+    min-height: max-content;
+    margin-top: auto;
+    bottom: 0;
+    position: sticky;
+    width: 100%;
+}
+
 /* Header */
 h1 {
     color: var(--purple);
-    font-size: 4rem;
+    font-size: 3.2rem;
+    scroll-margin-top: var(--header-height);
 }
 
 h2 {
     color: var(--purple-light);
-    font-size: 3.6rem;
+    font-size: 3rem;
+    scroll-margin-top: var(--header-height);
 }
 
 h3 {
     color: var(--purple);
-    font-size: 3.2rem;
+    font-size: 2.8rem;
+    scroll-margin-top: var(--header-height);
 }
 
 h4 {
     color: var(--gold);
-    font-size: 2.8rem;
+    font-size: 2.4rem;
+    scroll-margin-top: var(--header-height);
 }
 
 h5 {
     color: var(--purple-light);
-    font-size: 2.4rem;
+    font-size: 2.2rem;
+    scroll-margin-top: var(--header-height);
 }
 
 h6 {
     color: var(--purple);
     font-size: 2rem;
+    scroll-margin-top: var(--header-height);
+}
+
+header {
+    background-color: var(--bg-color);
+    display: flex;
+    min-height: var(--header-height);
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+}
+
+header::after {
+    background: var(--purple-light);
+    bottom: 0;
+    content: '';
+    height: 2px;
+    left: 0;
+    position: absolute;
+    width: 100%;
 }
 
 main {
-    padding-left: 2.4rem;
+    flex: 1;
 }
 
 section {

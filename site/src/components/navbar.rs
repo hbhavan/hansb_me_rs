@@ -1,106 +1,42 @@
-use dioxus::logger::tracing::info;
 use dioxus::prelude::*;
-use serde::{Deserialize, Serialize};
 
-use crate::data::KeyboardSelector;
-use crate::pages::*;
-
-#[derive(Debug, Clone, Routable, PartialEq, Serialize, Deserialize)]
-#[rustfmt::skip]
-pub enum Route {
-    #[layout(Navbar)]
-    #[route("/")]
-    Home,
-
-    #[route("/devlog")]
-    DevLog,
-    #[route("/devlog/listing/:id")]
-    DevLogListing { id: String },
-
-    #[route("/projects")]
-    Projects,
-    #[route("/projects/:id")]
-    ProjectContent { id: String },
-
-    #[route("/about")]
-    About,
-
-    #[route("/error")]
-    ErrorPage 
-}
+use crate::layout::Route;
 
 #[derive(Clone)]
 struct NavLink<'a> {
     pub route: Route,
     pub text: &'a str,
-    pub key: char,
-    pub selected: bool,
 }
 
 impl<'a> NavLink<'a> {
-    pub fn new(route: Route, text: &'a str, key: char) -> Self {
+    pub fn new(route: Route, text: &'a str) -> Self {
         Self {
             route,
             text,
-            key,
-            selected: false,
-        }
-    }
-}
-
-impl<'a> KeyboardSelector for Vec<NavLink<'a>> {
-    fn on_key_press(&mut self, evt: Event<KeyboardData>) {
-        info!("Key pressed");
-
-        if let Key::Character(k) = evt.key() {
-            for q in self.iter_mut() {
-                if q.key.to_string() == k.to_uppercase().as_str() {
-                    q.selected = true;
-                } else {
-                    q.selected = false;
-                }
-            }
         }
     }
 }
 
 fn get_nav_links<'a>() -> Vec<NavLink<'a>> {
-    let home = NavLink::new(Route::Home, "Home", 'H');
-    let devlog = NavLink::new(Route::DevLog, "Dev Log", 'D');
-    let projects = NavLink::new(Route::Projects, "Projects", 'P');
-    let about = NavLink::new(Route::About, "About", 'A');
+    let home = NavLink::new(Route::Home, "Home");
+    let devlog = NavLink::new(Route::DevLog, "Dev Log");
+    let projects = NavLink::new(Route::Projects, "Projects");
+    let about = NavLink::new(Route::About, "About");
 
     vec![home, devlog, projects, about]
 }
 
 #[component]
-fn Navbar() -> Element {
+pub fn NavBar() -> Element {
     let nav_links = get_nav_links();
-    let mut n = use_signal(|| nav_links);
 
     rsx! {
-        div {
-            class: "keyboard-listener",
-            tabindex: 0,
-            onkeydown: move |e| n.write().on_key_press(e),
-            nav {
-                class: "nav-bar",
-                for nav_link in n.read().clone() {
-                    div {
-                        class: "nav-link",
-                        Link {
-                            to: nav_link.route,
-                            {nav_link.text}
-                        }
-                        span {
-                            class: if nav_link.selected { "selected" },
-                            {format!("[{}]", nav_link.key)}
-                        }
-                    }
+        nav { class: "nav-bar",
+            for nav_link in nav_links {
+                div { class: "nav-link",
+                    Link { to: nav_link.route, {nav_link.text} }
                 }
-            },
+            }
         }
-
-        Outlet::<Route> {}
     }
 }

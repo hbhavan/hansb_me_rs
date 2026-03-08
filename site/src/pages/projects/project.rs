@@ -3,30 +3,24 @@ use dioxus::prelude::*;
 use writ::utils::menu::*;
 use crate::{
     components::*,
-    pages::projects::content::{Project, get_project_by_id}, utils::render::Render,
+    pages::projects::content::{get_project_by_id}, utils::render::Render,
 };
 
 #[component]
-pub fn ProjectContent(id: String) -> Element {
+pub fn ProjectContent(id: i32) -> Element {
     let project = get_project_by_id(id);
 
-    rsx! {
-        main {
-            ProjectRender { project }
-        }
-    }
-}
-
-#[component]
-fn ProjectRender(project: Option<Project>) -> Element {
     if let Some(p) = project {
         let menu = p.desc.to_menu();
 
         rsx! {
-            PageTitle { text: p.title, size: TitleSize::Medium }
-            Menu { menu }
-
-            {p.desc.render()}
+            div { class: "post-content",
+                div {
+                    Menu { menu }
+                }
+                article { {p.desc.render()} }
+                div {}
+            }
         }
     } else {
         rsx! {

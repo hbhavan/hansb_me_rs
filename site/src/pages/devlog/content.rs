@@ -4,8 +4,8 @@ use writ::utils::menu::*;
 use crate::{components::*, utils::render::Render};
 
 #[component]
-pub fn DevLogListing(id: String) -> Element {
-    let md_text = use_server_future(move || get_devlog(id.clone()))?;
+pub fn DevLogListing(id: i32) -> Element {
+    let md_text = use_server_future(move || get_devlog(id))?;
 
     let markdown = match md_text() {
         Some(value) => match value {
@@ -29,19 +29,11 @@ pub fn DevLogListing(id: String) -> Element {
 }
 
 #[get("/get_devlog/{id}")]
-async fn get_devlog(id: String) -> Result<String, ServerFnError> {
-    use dioxus::logger::tracing::info;
-    use std::char;
-    use std::fs::File;
-    use std::io::Read;
+async fn get_devlog(id: i32) -> Result<String, ServerFnError> {
+    use services::api::devlog;
 
-    let path = format!("./store/markdown/{}/{}.md", id, id).to_string();
+    let markdown = devlog::get_devlog_by_id(id).await
+        .map_err(|_| ServerFnError::new("Could not get content"));
 
-    let mut buf = String::from("");
-    info!("Path: {:?}", path);
-
-    match File::open(path).and_then(|mut f| f.read_to_string(&mut buf)) {
-        Ok(_) => Ok(buf),
-        Err(_) => Err(ServerFnError::new("Could not open file")),
-    }
+    markdown
 }

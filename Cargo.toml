@@ -10,6 +10,7 @@ edition = "2021"
 members = ["migration", "site", "services", "writ"]
 
 [dependencies]
+dotenv = "*"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 services = { path = "./services/" }
 site = { path = "./site" }

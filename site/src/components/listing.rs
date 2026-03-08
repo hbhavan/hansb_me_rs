@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use super::navbar::Route;
+use crate::layout::Route;
 
 pub trait Listable: Clone + PartialEq + 'static {
     fn to_listing(&self) -> Listing;
@@ -15,19 +13,19 @@ pub trait Listable: Clone + PartialEq + 'static {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Listing {
-    id: Arc<str>,
+    id: i32,
     pub route: Route,
     pub title: String,
 }
 
 #[allow(dead_code)]
 impl Listing {
-    pub fn new(id: Arc<str>, title: String, route: Route) -> Self {
+    pub fn new(id: i32, title: String, route: Route) -> Self {
         Self { id, title, route }
     }
 
-    pub fn id(&self) -> Arc<str> {
-        self.id.clone()
+    pub fn id(&self) -> i32 {
+        self.id
     }
 }
 
@@ -36,7 +34,6 @@ impl Listable for Listing {
         self.clone()
     }
 }
-
 
 #[component]
 pub fn Listings<T: Listable>(listings: Vec<T>) -> Element {
@@ -53,11 +50,6 @@ pub fn Listings<T: Listable>(listings: Vec<T>) -> Element {
 #[component]
 fn ListingLink(listing: Listing) -> Element {
     rsx! {
-        Link {
-            class: "listing-link",
-            id: listing.id().as_ref().to_string(),
-            to: listing.route,
-            {listing.title}
-        }
+        Link { class: "listing-link", id: listing.id(), to: listing.route, {listing.title} }
     }
 }

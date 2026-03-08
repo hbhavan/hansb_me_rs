@@ -24,6 +24,14 @@
     height: 30px;
 }
 
+.banner {
+    align-self: flex-start;
+}
+
+.banner>.logo {
+    font-size: 4rem;
+}
+
 /* Code */
 .code-block {
     font-size: x-large;
@@ -35,6 +43,26 @@
 
 .code-snippet {
     font-size: medium;
+}
+
+.footer-container {
+    display: flex;
+    /*gap: 2em;*/
+    justify-content: center;
+    text-align: center;
+}
+
+/* Headings */
+.heading {
+    margin-bottom: 24px;
+}
+
+.heading+.heading {
+    margin-top: 48px;
+}
+
+.heading+.section {
+    padding-left: 36px;
 }
 
 /* Key Grid */
@@ -97,6 +125,14 @@
     justify-content: space-between;
 }
 
+/* Logo */
+.logo {
+    font-family: "Space Mono", monospace;
+    font-size: 2rem;
+    font-weight: 600;
+    font-style: italic;
+}
+
 /* Markdown */
 .md {
     padding-left: 248px;
@@ -118,8 +154,8 @@
     flex-direction: column;
     justify-content: right;
     max-width: 200px;
-    position: fixed;
     padding: 4px;
+    position: fixed;
     top: 180px;
     left: 32px;
 }
@@ -142,29 +178,16 @@
 
 /* Navbar */
 .nav-bar {
+    align-self: center;
     display: flex;
     flex-direction: row;
-    gap: 2em;
-    justify-content: flex-end;
-    position: fixed;
-    right: 2em;
-    top: 1em;
+    gap: 1.8em;
 }
 
 .nav-link {
     padding-bottom: 6px;
     position: relative;
     width: max-content;
-}
-
-.nav-link::after {
-    background: var(--purple-light);
-    bottom: 0;
-    content: '';
-    height: 4px;
-    left: 0;
-    position: absolute;
-    width: 100%;
 }
 
 .nav-link a {
@@ -195,6 +218,22 @@
     font-size: 1.6rem;
 }
 
+/* Post */
+.post-content {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.post-content>article {
+    flex: 1.5;
+}
+
+.post-content>div {
+    flex: 1;
+    margin-top: 2rem;
+}
+
+
 /* Search */
 .search {
     background-color: var(--bg-color);
@@ -202,8 +241,8 @@
     border-radius: 8px;
     color: var(--gold-light);
     font-size: 2rem;
-    padding: 16px;
-    width: 50vw;
+    padding: 1rem;
+    width: 100%;
     height: 2rem;
 }
 
@@ -230,16 +269,22 @@
     z-index: 1;
 }
 
-/* Section */
-.title+.section {
-    padding-left: 36px;
+.text-blue {
+    color: var(--blue);
 }
 
-/* Titles and Headers */
-.title {
-    margin-bottom: 24px;
+.text-purple {
+    color: var(--purple);
 }
 
-.title+.title {
-    margin-top: 48px;
+.text-purple-light {
+    color: var(--purple-light);
+}
+
+.text-gold {
+    color: var(--gold);
+}
+
+.text-gold-light {
+    color: var(--gold-light);
 }

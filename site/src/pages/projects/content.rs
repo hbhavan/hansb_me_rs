@@ -5,14 +5,15 @@ use dioxus::prelude::*;
 
 use writ::data::markdown::*;
 use crate::{
-    components::{Badges, Listable, Listing, navbar::Route},
+    components::{Badges, Listable, Listing},
     data::{searchable::{SearchItem, Searchable}, skill::Skill},
+    layout::Route,
     pages::projects::content::{rpc_bot::RPCBot, rpc_gg::RPCGG, test::TestProject},
 };
 
 #[derive(Clone)]
 pub struct Project {
-    project_id: String,
+    project_id: i32,
     pub title: String,
     pub link: Option<String>,
     pub project_type: ProjectType,
@@ -22,7 +23,7 @@ pub struct Project {
 }
 
 impl Project {
-    pub fn id(&self) -> String {
+    pub fn id(&self) -> i32 {
         self.project_id.clone()
     }
 
@@ -31,13 +32,13 @@ impl Project {
         let title = project_data.title();
         let skills = project_data.skills();
 
-        let lisitng = Listing::new(
-            project_id.as_str().into(),
+        let listing = Listing::new(
+            project_id,
             title,
             Route::ProjectContent { id: project_id },
         );
 
-        (lisitng, skills)
+        (listing, skills)
     }
 
     pub fn from_project_data(project_data: &dyn ProjectData) -> Self {
@@ -86,7 +87,7 @@ pub enum Status {
 }
 
 pub trait ProjectData {
-    fn project_id(&self) -> String;
+    fn project_id(&self) -> i32;
 
     fn title(&self) -> String;
 
@@ -129,12 +130,6 @@ impl Listable for (Listing, Vec<Skill>) {
     fn to_listing(&self) -> Listing {
         self.0.clone()
     }
-
-    fn display(&self) -> dioxus::prelude::Element {
-        rsx! {
-            Badges { badge_items: self.1.clone() }
-        }
-    }
 }
 
 impl SearchItem for (Listing, Vec<Skill>) {
@@ -165,7 +160,7 @@ pub fn project_listings() -> Vec<(Listing, Vec<Skill>)> {
 }
 
 
-pub fn get_project_by_id(id: String) -> Option<Project> {
+pub fn get_project_by_id(id: i32) -> Option<Project> {
     projects()
         .iter()
         .find(|x| x.project_id() == id)

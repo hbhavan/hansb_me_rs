@@ -6,14 +6,16 @@ edition = "2024"
 [dependencies]
 chrono = "0.4.42"
 dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
+dotenv = "*"
 futures = "0.3.31"
 serde = { version = "1.0.219", features = ["derive", "rc"] }
 writ = { path = "../writ" }
+services = { path = "../services/", optional = true }
 
 [features]
 default = ["web"]
 web = ["dioxus/web"]
-server = ["dioxus/server" ]
+server = ["dioxus/server", "dep:services"]
 
 [profile.wasm-dev]
 inherits = "dev"

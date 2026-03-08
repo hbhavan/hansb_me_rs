@@ -1,6 +1,8 @@
 /* App-wide styling */
-#home>h1 {
-    color: transparent;
-    background-image: var(--prm-sec-gradient);
-    background-clip: text;
+#main {
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    flex-flow: column;
+    min-height: 100vh;
 }

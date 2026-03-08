@@ -1,15 +1,9 @@
 extern crate hansb_me_3;
-use services::entities::db_conn;
+use dotenv::dotenv;
+use services::entities::{apply_migrations, get_db};
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     println!("Running site");
-
-    let q = db_conn().await;
-
-    match q {
-        Ok(_) => println!("Db Connection established"),
-        Err(e) => println!("{e}")
-    };
-
 }

@@ -310,15 +310,7 @@ impl Markdown {
             \n##### Test
             \n###### Test";
 
-        let lines: Vec<String> = sample
-            .split('\n')
-            .filter(|l| l.trim().len() > 0)
-            .map(|l| l.to_string())
-            .collect();
-
-        let content = Paragraph::accumulate(Seq::from_vec(lines));
-
-        Self { content }
+        Self::from_string(sample.to_string())
     }
 }
 
@@ -327,7 +319,7 @@ impl MenuMaker for Markdown {
         self.content
             .iter()
             .filter(|p| match p {
-                Paragraph::Header(size, _) if *size < 3 => true,
+                Paragraph::Header(size, _) if *size > 1 && *size < 4 => true,
                 _ => false,
             })
             .map(|h| match h {
@@ -347,7 +339,8 @@ fn to_menu_item(size: usize, text: &Seq<Text>) -> MenuItem {
     let title = content.join(" ");
     let path = format!("#{}", content.join("_").replace(" ", "_"));
     match size {
-        2 => MenuItem::sub_item(&title, &path),
-        _ => MenuItem::main_item(&title, &path),
+        2 => MenuItem::main_item(&title, &path),
+        3 => MenuItem::sub_item(&title, &path),
+        _ => MenuItem::empty()
     }
 }

@@ -10,15 +10,16 @@ use crate::{
 pub fn Projects() -> Element {
     let mut projects = use_signal(|| project_listings());
 
-
     rsx! {
-        main { id: "projects",
-            PageTitle { text: "Projects", size: TitleSize::Big }
-            Search { on_search_change: move |e| filter(&mut projects.write(), project_listings(), e) }
-
-            hr {}
-
-            Listings { listings: projects.read().clone() }
+        div { class: "post-content",
+            div {
+                Search { on_search_change: move |e| filter(&mut projects.write(), project_listings(), e) }
+            }
+            article {
+                Heading { text: "Projects", size: HeadingSize::Big }
+                Listings { listings: projects.read().clone() }
+            }
+            div {}
         }
     }
 }
@@ -26,7 +27,7 @@ pub fn Projects() -> Element {
 fn filter(projects: &mut Vec<(Listing, Vec<Skill>)>, listings: Vec<(Listing, Vec<Skill>)>, item: Event<FormData>) {
     *projects = listings
         .iter()
-        .filter(|(x, _)| x.id().as_ref().contains(&item.value()))
+        .filter(|(x, _)| x.title.contains(&item.value()))
         .map(|x| x.to_owned())
         .collect();
 }
