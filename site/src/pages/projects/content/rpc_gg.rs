@@ -10,7 +10,7 @@ impl ProjectData for RPCGG {
     }
 
     fn title(&self) -> String {
-        "rpc.gg".into()
+        String::from("rpc.gg")
     }
 
     fn project_type(&self) -> ProjectType {

@@ -1,8 +1,12 @@
 :root {
     --base-color: #FFFFFF;
     --bg-color: #1C1C1C;
+    --bg-color-dark: #515151;
+
+    --selection: #565656;
 
     --blue: #5387B5;
+    --blue-light: #63A2D8;
 
     --gold: #DBA453;
     --gold-light: #FFCC84;
@@ -35,6 +39,26 @@ body {
     margin: 0;
 }
 
+button {
+    border: solid;
+    border-width: 0.125rem;
+    border-color: var(--purple);
+    border-radius: 0.5rem;
+    background-color: var(--bg-color);
+    color: white;
+    font-size: 1rem;
+}
+
+button.selected {
+    background-color: var(--selection);
+    pointer-events: none;
+}
+
+button:hover {
+    background-color: var(--purple-light);
+    color: var(--bg-color);
+}
+
 /* Code */
 code {
     color: var(--gold-light);
@@ -50,9 +74,23 @@ footer {
     width: 100%;
 }
 
+footer::before {
+    background: var(--purple-light);
+    content: '';
+    height: 2px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
 /* Header */
-h1 {
+h {
     color: var(--purple);
+}
+
+h1 {
+    color: var(--purple-light);
     font-size: 3.2rem;
     scroll-margin-top: var(--header-height);
 }
@@ -64,13 +102,13 @@ h2 {
 }
 
 h3 {
-    color: var(--purple);
+    color: var(--purple-light);
     font-size: 2.8rem;
     scroll-margin-top: var(--header-height);
 }
 
 h4 {
-    color: var(--gold);
+    color: var(--purple-light);
     font-size: 2.4rem;
     scroll-margin-top: var(--header-height);
 }
@@ -82,7 +120,7 @@ h5 {
 }
 
 h6 {
-    color: var(--purple);
+    color: var(--purple-light);
     font-size: 2rem;
     scroll-margin-top: var(--header-height);
 }

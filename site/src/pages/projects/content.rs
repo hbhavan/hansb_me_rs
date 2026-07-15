@@ -1,14 +1,19 @@
-use std::ops::Deref;
+use core::option::Option::None;
+use std::ops::{Deref};
 
 use chrono::NaiveDate;
 use dioxus::prelude::*;
 
-use writ::data::markdown::*;
+use writ::data::{markdown::*};
 use crate::{
-    components::{Badges, Listable, Listing},
+    components::{Listable, Listing},
     data::{searchable::{SearchItem, Searchable}, skill::Skill},
     layout::Route,
-    pages::projects::content::{rpc_bot::RPCBot, rpc_gg::RPCGG, test::TestProject},
+    pages::projects::content::{
+        rpc_bot::RPCBot,
+        rpc_gg::RPCGG,
+        set_game::{SetGame},
+        test::TestProject},
 };
 
 #[derive(Clone)]
@@ -19,7 +24,8 @@ pub struct Project {
     pub project_type: ProjectType,
     pub skills: Vec<Skill>,
     pub status: Status,
-    pub desc: Markdown,
+    pub desc: MarkdownContent,
+    pub content: Option<Element>
 }
 
 impl Project {
@@ -48,7 +54,8 @@ impl Project {
         let project_type = project_data.project_type();
         let skills = project_data.skills();
         let status = project_data.status();
-        let desc = Markdown::from_string(project_data.desc());
+        let desc = MarkdownContent::from_string(&project_data.desc());
+        let content = project_data.render_project();
 
         Self {
             project_id,
@@ -58,6 +65,7 @@ impl Project {
             project_type,
             skills,
             status,
+            content
         }
     }
 }
@@ -104,6 +112,8 @@ pub trait ProjectData {
     fn status(&self) -> Status;
 
     fn desc(&self) -> String;
+
+    fn render_project(&self) -> Option<Element> { None }
 }
 
 impl Status {
@@ -127,6 +137,10 @@ impl Status {
 }
 
 impl Listable for (Listing, Vec<Skill>) {
+    fn key(&self) -> String {
+        self.0.key()
+    }
+
     fn to_listing(&self) -> Listing {
         self.0.clone()
     }
@@ -149,6 +163,7 @@ pub fn projects() -> Vec<Box<dyn ProjectData>> {
         Box::new(RPCBot),
         Box::new(RPCGG),
         Box::new(TestProject),
+        Box::new(SetGame),
     ]
 }
 
@@ -169,4 +184,5 @@ pub fn get_project_by_id(id: i32) -> Option<Project> {
 
 mod rpc_bot;
 mod rpc_gg;
+pub mod set_game;
 mod test;

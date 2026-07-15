@@ -3,12 +3,25 @@ use std::env;
 
 pub mod devlog;
 
+pub fn migrate() -> Result<(), DbErr> {
+    println!("Migration exec");
+    tokio::runtime::Runtime::new()
+        .unwrap()
+        .block_on(async {
+            let migration_result = apply_migrations().await;
 
-pub async fn apply_migrations(db: &DatabaseConnection) -> Result<(), DbErr> {
-    println!("applying migrations");
-    
+            migration_result
+        })?;
+
+    Ok(())
+}
+
+pub async fn apply_migrations() -> Result<(), DbErr> {
+    println!("Applying migrations");
+    let db = get_db().await?;
+
     let reg = db.get_schema_registry(module_path!().split("::").next().unwrap());
-    reg.apply(db).await?;
+    reg.apply(&db).await?;
 
     Ok(())
 }

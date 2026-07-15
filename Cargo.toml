@@ -13,5 +13,5 @@ members = ["migration", "site", "services", "writ"]
 dotenv = "*"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 services = { path = "./services/" }
-site = { path = "./site" }
+site = { path = "./site/" }
 writ = { path = "./writ/" }

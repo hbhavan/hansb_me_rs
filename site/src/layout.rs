@@ -31,3 +31,17 @@ pub enum Route {
     ErrorPage 
 }
 
+impl Route {
+    pub fn title(&self) -> Option<String> {
+        use Route::*;
+
+        match self {
+            Home => Some(String::from("Hans Bhavan")),
+            DevLog => Some(String::from("Dev Log")),
+            Projects => Some(String::from("Projects")),
+            About => Some(String::from("About")),
+            ErrorPage => Some(String::from("Error")),
+            _ => None
+        }
+    }
+}

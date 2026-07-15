@@ -16,7 +16,6 @@ pub fn Projects() -> Element {
                 Search { on_search_change: move |e| filter(&mut projects.write(), project_listings(), e) }
             }
             article {
-                Heading { text: "Projects", size: HeadingSize::Big }
                 Listings { listings: projects.read().clone() }
             }
             div {}

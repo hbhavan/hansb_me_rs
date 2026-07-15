@@ -1,287 +1,60 @@
-use std::{char, fs::File, io::Read};
-use crate::utils::{seq::*, menu::*};
+use std::{char};
+use crate::utils::{seq::*};
 
 #[derive(Clone, PartialEq)]
-pub struct Markdown {
-    pub content: Seq<Paragraph>,
+pub struct MarkdownContent {
+    pub content: Seq<Block>,
+}
+
+#[derive(Clone, PartialEq)]
+pub struct Block {
+    block_content: Seq<Text>,
+    pub block_type: BlockType
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum Paragraph {
-    Header(usize, Seq<Text>),
-    CodeSnippet(Seq<Text>),
-    CodeBlock(Seq<Seq<Text>>),
-    OrderedList(Seq<Seq<Text>>),
-    UnorderedList(Seq<Seq<Text>>),
-    BlockQuote(Seq<Seq<Text>>),
-    Para(Seq<Text>),
+pub enum BlockType {
+    BlockQuote,
+    CodeBlock,
+    CodeSnippet,
+    Header(usize),
     HorizontalRule,
+    OrderedList(usize),
     LineBreak,
+    Paragraph,
+    UnorderedList(usize),
+    Whitespace
+}
+
+#[derive(Clone, PartialEq)]
+pub struct Text {
+    text_content: String,
+    pub text_type: TextType
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum Text {
-    Italic(String),
-    Bold(String),
-    BoldItalic(String),
-    Struck(String),
-    Code(String),
-    Link(String, String),
-    Image(String, String),
-    Normal(String),
+pub enum TextType {
+    Bold,
+    BoldItalic,
+    Code,
+    Image(String),
+    Italic,
+    LineBreak,
+    Link(String),
+    Normal,
+    Struck,
+    Whitespace
 }
 
-#[allow(dead_code)]
-impl Paragraph {
-    pub fn get_paragraphs(markdown: &String) -> Seq<Paragraph> {
-        let lines = markdown.split('\n').map(|l| l.to_string()).collect();
-
-        Paragraph::accumulate(Seq::from_vec(lines))
-    }
-
-    fn accumulate(lines: Seq<String>) -> Seq<Paragraph> {
-        Self::accumulate_rec(Seq::new(), Seq::new(), lines)
-    }
-
-    fn accumulate_rec(acc: Seq<Paragraph>, curr: Seq<String>, rest: Seq<String>) -> Seq<Paragraph> {
-        use Paragraph::*;
-
-        let append_para = |p: Paragraph| {
-            Self::accumulate_rec(acc.clone().append_item(p), Seq::new(), rest.skip(1))
-        };
-
-        let append_line =
-            |s: String| Self::accumulate_rec(acc.clone(), curr.append_item(s), rest.skip(1));
-
-        let check_next = |c: char| {
-            rest.iter()
-                .nth(1)
-                .is_some_and(|line| match Seq::to_char_seq(line).to_slice() {
-                    [s, ' ', ..] if *s == c => true,
-                    _ => false,
-                })
-        };
-
-        let check_ol = || {
-            rest.iter()
-                .nth(1)
-                .is_some_and(|line| match Seq::to_char_seq(line).to_slice() {
-                    ['1'..'9', '1'..'9' | '.', ..] => true,
-                    _ => false,
-                })
-        };
-
-        match rest.first() {
-            Some(line) => match Seq::to_char_seq(line).to_slice() {
-                ['#', '#', '#', '#', '#', '#', ' ', text @ ..] => {
-                    append_para(Header(6, Text::from_chars(text)))
-                }
-                ['#', '#', '#', '#', '#', ' ', text @ ..] => {
-                    append_para(Header(5, Text::from_chars(text)))
-                }
-                ['#', '#', '#', '#', ' ', text @ ..] => {
-                    append_para(Header(4, Text::from_chars(text)))
-                }
-                ['#', '#', '#', ' ', text @ ..] => append_para(Header(3, Text::from_chars(text))),
-                ['#', '#', ' ', text @ ..] => append_para(Header(2, Text::from_chars(text))),
-                ['#', ' ', text @ ..] => append_para(Header(1, Text::from_chars(text))),
-
-                ['-', ' ', text @ ..] if check_next('-') => append_line(String::from_iter(text)),
-                ['-', ' ', text @ ..] => append_para(UnorderedList(Text::from_seq(
-                    curr.append_item(String::from_iter(text.iter())),
-                ))),
-
-                ['1'..'9', '.', text @ ..] if check_ol() => append_line(String::from_iter(text)),
-                ['1'..'9', '.', text @ ..] => append_para(OrderedList(Text::from_seq(
-                    curr.append_item(String::from_iter(text)),
-                ))),
-
-                ['`', '`', '`', text @ ..] if text.ends_with(&['`', '`', '`']) => {
-                    append_para(CodeSnippet(Text::from_chars(&text[..text.len() - 3])))
-                }
-
-                ['`', '`', '`', text @ ..] if curr.len() == 0 => {
-                    append_line(String::from_iter(text))
-                }
-
-                [text @ .., '`', '`', '`'] if curr.len() > 0 => append_para(CodeBlock(
-                    Text::from_seq(curr.append_item(String::from_iter(text))),
-                )),
-
-                ['>', ' ', text @ ..] if check_next('>') => append_line(String::from_iter(text)),
-                ['>', ' ', text @ ..] => append_para(BlockQuote(Text::from_seq(
-                    curr.append_item(String::from_iter(text)),
-                ))),
-
-                ['=', '=', '=', ..] => append_para(HorizontalRule),
-
-                [text @ ..] if text.len() == 0 => append_para(LineBreak),
-
-                [text @ ..] if curr.len() > 0 => append_line(String::from_iter(text)),
-
-                _ => append_para(Para(Text::from_string(line))),
-            },
-            None => match curr.len() > 0 {
-                true => acc.append_item(Para(Text::from_string(&curr.to_string()))),
-                false => acc,
-            },
+impl MarkdownContent {
+    pub fn from_string(s: &String) -> Self {
+        Self {
+            content: Block::parse_string(s)
         }
-    }
-}
-
-#[allow(dead_code)]
-impl Text {
-    pub fn from_seq(seq: Seq<String>) -> Seq<Seq<Text>> {
-        let text: Vec<Seq<Text>> = seq.iter().map(|s| Self::from_string(s)).collect();
-
-        Seq::from_vec(text)
-    }
-
-    pub fn from_chars(chars: &[char]) -> Seq<Text> {
-        let s = String::from_iter(chars.iter());
-
-        Self::from_string(&s)
-    }
-
-    pub fn from_string(line: &str) -> Seq<Text> {
-        Self::to_text_rec(Seq::new(), Seq::new(), line, None)
-    }
-
-    pub fn get_text(&self) -> &str {
-        use Text::*;
-
-        match self {
-            Normal(text) => text,
-            Bold(text) => text,
-            Italic(text) => text,
-            BoldItalic(text) => text,
-            Code(text) => text,
-            Struck(text) => text,
-            Link(text, _) => text,
-            Image(text, _) => text,
-        }
-    }
-
-    fn to_text_rec(acc: Seq<Text>, curr: Seq<char>, rest: &str, prefix: Option<char>) -> Seq<Text> {
-        use Text::*;
-
-        let trim = |c: char| curr.to_string().replace(c, "");
-
-        let append_text =
-            |text: Text| Self::to_text_rec(acc.append_item(text), Seq::new(), &rest[1..], None);
-
-        let append_char =
-            |c: char| Self::to_text_rec(acc.clone(), curr.append_item(c), &rest[1..], prefix);
-
-        let append_curr = || match curr.len() {
-            0 => acc.clone(),
-            _ => acc.append_item(Normal(curr.to_string())),
-        };
-
-        let split_curr = |c: char| match curr.len() {
-            0 => Self::to_text_rec(acc.clone(), Seq::single(c), &rest[1..], Some(c)),
-            _ => Self::to_text_rec(
-                acc.append_item(Normal(curr.to_string())),
-                Seq::single(c),
-                &rest[1..],
-                Some(c),
-            ),
-        };
-
-        let check_curr = |c: char, count: i32| {
-            let (prefix, suffix, found) =
-                curr.iter()
-                    .map(|x| *x)
-                    .fold((0, 1, false), |acc, x| match (x == c, acc.2) {
-                        (true, false) => (acc.0 + 1, acc.1, acc.2),
-                        (true, true) => (acc.0, acc.1 + 1, acc.2),
-                        (false, false) => (acc.0, acc.1, true),
-                        (_, _) => (acc.0, acc.1, acc.2),
-                    });
-            return prefix == count && suffix == count && found;
-        };
-
-        let check_prefix = |c: char| prefix.is_some_and(|p| p == c);
-
-        match rest.chars().next() {
-            Some(c) => match c {
-                '*' | '_' | '`' | '~' | '!' | '[' if prefix.is_none() => split_curr(c),
-
-                '*' | '_' if check_curr(c, 1) => append_text(Italic(trim(c))),
-                '*' | '_' if check_curr(c, 2) => append_text(Bold(trim(c))),
-                '*' | '_' if check_curr(c, 3) => append_text(BoldItalic(trim(c))),
-
-                '`' if check_curr('`', 1) => append_text(Code(trim('`'))),
-                '~' if check_curr('~', 1) => append_text(Struck(trim('~'))),
-
-                ')' if check_prefix('[') => append_text(Text::link(curr)),
-                ')' if check_prefix('!') => append_text(Text::image(curr)),
-
-                '\n' => append_curr(),
-                _ => append_char(c),
-            },
-            None => append_curr(),
-        }
-    }
-
-    fn link(text: Seq<char>) -> Text {
-        let line = text.to_string();
-
-        let (title, source) = match line.strip_prefix('[').and_then(|s| s.split_once('(')) {
-            Some((t, s)) => (t, s),
-            None => ("", ""),
-        };
-
-        Text::Link(title.replace("]", ""), source.to_string())
-    }
-
-    fn image(text: Seq<char>) -> Text {
-        let line = text.to_string();
-        let (title, source) = match line.strip_prefix("![").and_then(|s| s.split_once('(')) {
-            Some((t, s)) => (t, s),
-            None => ("", ""),
-        };
-
-        Text::Image(title.replace("]", ""), source.to_string())
-    }
-}
-
-#[allow(dead_code)]
-impl Markdown {
-    pub fn from_string(s: String) -> Self {
-        let content = Paragraph::get_paragraphs(&s);
-
-        Self { content }
-    }
-
-    pub fn new(content: Seq<Paragraph>) -> Self {
-        Self { content }
-    }
-
-    pub fn example() -> Self {
-        use Paragraph::*;
-        use Text::*;
-
-        let text = String::from("Test");
-
-        let sample_text = Normal(text);
-
-        let h1 = Header(1, Seq::from_vec(vec![sample_text.clone()]));
-        let h2 = Header(2, Seq::from_vec(vec![sample_text.clone()]));
-        let h3 = Header(3, Seq::from_vec(vec![sample_text.clone()]));
-        let h4 = Header(4, Seq::from_vec(vec![sample_text.clone()]));
-        let h5 = Header(5, Seq::from_vec(vec![sample_text.clone()]));
-        let h6 = Header(6, Seq::from_vec(vec![sample_text.clone()]));
-
-        let p = Para(Seq::from_vec(vec![sample_text.clone()]));
-
-        let content = Seq::from_vec(vec![h1, h2, h3, h4, h5, h6, p]);
-
-        Self { content }
     }
 
     pub fn parse_example() -> Self {
-        let sample = "Parse example
+        let sample = String::from("Parse example
             \n*Italic*
             \n**Bold**
             \n***Bold Italic***
@@ -308,39 +81,223 @@ impl Markdown {
             \n### ~Test~
             \n#### Test
             \n##### Test
-            \n###### Test";
+            \n###### Test");
 
-        Self::from_string(sample.to_string())
+        Self {
+            content: Block::parse_string(&sample)
+        }
     }
 }
 
-impl MenuMaker for Markdown {
-    fn to_menu(&self) -> Vec<MenuItem> {
-        self.content
+impl Block {
+    pub fn content(&self) -> Seq<Text> {
+        self.block_content.clone()
+    }
+
+    pub fn parse_string(content: &String) -> Seq<Block> {
+        let lines = content
+            .split('\n')
+            .map(|l| l.to_string())
+            .collect();
+
+        Self::aggregate(Seq::from_vec(lines))
+    }
+
+    fn aggregate(lines: Seq<String>) -> Seq<Block> {
+        Self::aggregate_rec(Seq::new(), Self::empty(), lines)
+    }
+
+    fn aggregate_rec(
+        acc: Seq<Block>,
+        curr: Block,
+        rest: Seq<String>) -> Seq<Block> {
+        if let Some(line) = rest.first() {
+            let (curr_new, next) = Self::from_line(&curr, &line);
+
+            if let Some(block) = next {
+                return Self::aggregate_rec(
+                    acc.append_item(curr_new), 
+                    block,
+                    rest.skip(1))
+            } else {
+                return Self::aggregate_rec(
+                    acc.append_item(curr_new.clone()), 
+                    curr_new.clone(), 
+                    rest.skip(1))
+            }
+        }
+
+        acc
+    }
+
+    pub fn from_line<'a>(
+        curr: &'a Block,
+        line: &String) -> (Block, Option<Block>) {
+        use BlockType::*;
+
+        let (curr_new, next, content) =  match (Seq::to_char_seq(line).to_slice(), curr.block_type.clone()) {
+            (['#', '#', '#', '#', '#', '#', ' ', text @ ..], _) => (curr, Some(Header(6)), Text::from_chars(text)),
+            (['#', '#', '#', '#', '#', ' ', text @ ..], _) => (curr, Some(Header(5)), Text::from_chars(text)),
+            (['#', '#', '#', '#', ' ', text @ ..], _) => (curr, Some(Header(4)), Text::from_chars(text)),
+            (['#', '#', '#', ' ', text @ ..], _) => (curr, Some(Header(3)), Text::from_chars(text)),
+            (['#', '#', ' ', text @ ..], _) => (curr, Some(Header(2)), Text::from_chars(text)),
+            (['#', ' ', text @ ..], _) => (curr, Some(Header(1)), Text::from_chars(text)),
+
+            (['-', ' ', text @ ..], UnorderedList(_)) => (&curr.append_line_break(), None, Text::from_chars(text)),
+            (['-', ' ', text @ ..], _) => (curr, Some(UnorderedList(1)), Text::from_chars(text)),
+
+            (['+', ' ', text @ ..], OrderedList(_)) => (&curr.append_line_break(), None, Text::from_chars(text)),
+            (['+', ' ', text @ ..], _) => (curr, Some(OrderedList(1)), Text::from_chars(text)),
+
+            (['`', '`', '`', text @ .., '`', '`', '`'], _) => (curr, Some(CodeSnippet), Text::from_chars(text)),
+
+            (['`', '`', '`', text @ ..], CodeBlock) => (&curr.append_line_break(), Some(CodeBlock), Text::from_chars(text)),
+            (['`', '`', '`', text @ ..], _) => (curr, Some(CodeBlock), Text::from_chars(text)),
+            ([text @ .., '`', '`', '`'], CodeBlock) => (&curr.append_line_break(), None, Text::from_chars(text)),
+
+            ([text @ ..], CodeBlock) => (&curr.append_line_break(), Some(CodeBlock), Text::from_chars(text)),
+
+            (['>', ' ', text @ ..], BlockQuote) => (&curr.append_line_break(), None, Text::from_chars(text)),
+            (['>', ' ', text @ ..], _) => (curr, Some(BlockQuote), Text::from_chars(text)),
+
+
+            (['=', '=', '=', text @ ..], _) => (curr, Some(HorizontalRule), Text::from_chars(text)),
+
+            ([text @ ..], _) => (curr, Some(Paragraph), Text::from_chars(text))
+        };
+
+
+        match next {
+            Some(block_type) => (curr_new.clone(), Some(Block { block_type, block_content: content })),
+            None => (curr_new.with(content), None)
+        }
+    }
+
+    pub fn line_break() -> Self {
+        Self {
+            block_type: BlockType::LineBreak,
+            block_content: Seq::new()
+        }
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            block_type: BlockType::Whitespace,
+            block_content: Seq::new()
+        }
+    }
+
+    pub fn with(&self, content: Seq<Text>) -> Self {
+        Self {
+            block_type: self.block_type.clone(),
+            block_content: self.block_content.append(content)
+        }
+    }
+
+    fn append_line_break(&self) -> Self {
+        let block_type = match self.block_type {
+            BlockType::OrderedList(n) => BlockType::OrderedList(n + 1),
+            BlockType::UnorderedList(n) => BlockType::UnorderedList(n + 1),
+            _ => self.block_type.clone()
+        };
+
+        Self {
+            block_type,
+            block_content: self.block_content.append_item(Text::line_break())
+        }
+    }
+}
+
+impl Text {
+    pub fn text_content(&self) -> String {
+        self.text_content.clone()
+    }
+
+    pub fn split_list_content(text: Seq<Text>) -> Seq<Seq<Text>> {
+        text
             .iter()
-            .filter(|p| match p {
-                Paragraph::Header(size, _) if *size > 1 && *size < 4 => true,
-                _ => false,
-            })
-            .map(|h| match h {
-                Paragraph::Header(size, text) => to_menu_item(*size, text),
-                _ => MenuItem::empty(),
-            })
-            .collect::<Vec<_>>()
+            .fold((Seq::<Seq<Text>>::new(), Seq::<Text>::new()), |(acc, curr), next| match next.text_type {
+                TextType::LineBreak => (acc.append_item(curr), Seq::new()),
+                _ => (acc, curr.append_item(next.clone()))
+            }).0
+                
     }
-}
 
-fn to_menu_item(size: usize, text: &Seq<Text>) -> MenuItem {
-    let content = text
-        .iter()
-        .map(|t| t.get_text().to_string())
-        .collect::<Vec<_>>();
+    pub fn parse_chars(_chars: &[char]) -> Seq<Text> {
+        Seq::new()
+    }
 
-    let title = content.join(" ");
-    let path = format!("#{}", content.join("_").replace(" ", "_"));
-    match size {
-        2 => MenuItem::main_item(&title, &path),
-        3 => MenuItem::sub_item(&title, &path),
-        _ => MenuItem::empty()
+    pub fn from_str(_s: &str) -> Seq<Text> {
+        Seq::new()
+    }
+
+    pub fn from_chars<'a>(
+        chars: &'a [char],
+    ) -> Seq<Text> {
+        Self::from_chars_rec(chars, Self::empty(), "")
+    }
+
+    pub fn from_chars_rec<'a>(
+        acc: &[char],
+        _curr: Self,
+        _rest: &str
+    ) -> Seq<Text> {
+        let s = String::from_iter(acc.iter());
+
+        Seq::single(Text { 
+            text_type: TextType::Normal,
+            text_content: s
+        })
+
+        /*
+        match rest.chars().next() {
+            Some(c) => match c {
+                '*' | '_' | '`' | '~' | '!' | '[' if prefix.is_none() => split_curr(c),
+
+                '*' | '_' if check_curr(c, 1) => append_text(Italic(trim(c))),
+                '*' | '_' if check_curr(c, 2) => append_text(Bold(trim(c))),
+                '*' | '_' if check_curr(c, 3) => append_text(BoldItalic(trim(c))),
+
+                '`' if check_curr('`', 1) => append_text(Code(trim('`'))),
+                '~' if check_curr('~', 1) => append_text(Struck(trim('~'))),
+
+                ')' if check_prefix('[') => append_text(Text::link(curr)),
+                ')' if check_prefix('!') => append_text(Text::image(curr)),
+
+                '\n' => append_curr(),
+                _ => append_char(c),
+            },
+            None => append_curr(),
+        }
+        */
+        //Seq::new();
+    }
+
+    pub fn line_break() -> Self {
+        Self {
+            text_type: TextType::LineBreak,
+            text_content: String::new()
+        }
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            text_type: TextType::Whitespace,
+            text_content: String::new()
+        }
+    } 
+
+    fn _check_curr(curr: &[char], c: char, count: i32) -> bool {
+        let (prefix, suffix, found) = curr
+            .iter()
+            .map(|x| *x)
+            .fold((0, 1, false), |acc, x| match (x == c, acc.2) {
+                (true, false) => (acc.0 + 1, acc.1, acc.2),
+                (true, true) => (acc.0, acc.1 + 1, acc.2),
+                (false, false) => (acc.0, acc.1, true),
+                (_, _) => (acc.0, acc.1, acc.2),
+            });
+
+        prefix == count && suffix == count && found
     }
 }

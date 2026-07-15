@@ -123,6 +123,10 @@ impl<T: Clone> Seq<T> {
     pub fn to_slice(&self) -> &[T] {
         self.items.iter().as_slice()
     }
+
+    pub fn rest(&self) -> Seq<T> {
+        self.skip(1)
+    }
 }
 
 #[allow(dead_code)]

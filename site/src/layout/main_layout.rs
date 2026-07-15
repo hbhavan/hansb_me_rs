@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use crate::components::{logo::Logo, navbar::NavBar};
+use crate::components::{heading::{Heading, HeadingSize}, logo::Logo, navbar::NavBar};
 use super::Route;
 
 #[component]
@@ -25,8 +25,19 @@ fn Banner() -> Element {
 
 #[component]
 fn Content() -> Element {
+    let route = use_route::<Route>();
+    let title = route
+        .title()
+        .map(|text| rsx!{
+            Heading { text, size: HeadingSize::Medium }
+        });
+
     rsx! {
-        main { Outlet::<Route> {} }
+        main {
+            {title}
+
+            Outlet::<Route> {}
+        }
     }
 }
 
@@ -35,7 +46,6 @@ fn Content() -> Element {
 fn Footer() -> Element {
     rsx! {
         footer {
-            hr {}
             div { class: "footer-container", Logo {} }
         }
     }

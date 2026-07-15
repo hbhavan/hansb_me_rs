@@ -15,8 +15,21 @@ const COMPONENT_CSS: Asset = asset!("/assets/css/components.css");
 const CUSTOM_CSS: Asset = asset!("/assets/css/custom.css");
 
 pub fn main() {
+    println!("Starting up");
+
+    println!("Reading .env");
     dotenv().ok();
 
+    #[cfg(feature = "server")]
+    {
+        println!("Migrating");
+        let _ = match services::entities::migrate() {
+            Ok(_) => println!("Migrations successfully ran"),
+            Err(e) => println!("Migrations failed: {}", e)
+        };
+    }
+
+    println!("Launching app");
     dioxus::launch(App);
 }
 

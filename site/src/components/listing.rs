@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use crate::layout::Route;
 
 pub trait Listable: Clone + PartialEq + 'static {
+    fn key(&self) -> String;
+
     fn to_listing(&self) -> Listing;
 
     fn display(&self) -> Element {
@@ -30,6 +32,10 @@ impl Listing {
 }
 
 impl Listable for Listing {
+    fn key(&self) -> String {
+        self.id.to_string()
+    }
+
     fn to_listing(&self) -> Listing {
         self.clone()
     }
@@ -39,7 +45,7 @@ impl Listable for Listing {
 pub fn Listings<T: Listable>(listings: Vec<T>) -> Element {
     rsx! {
         for listing in listings {
-            div { class: "listing",
+            div { class: "listing", key: "{listing.key()}",
                 ListingLink { listing: listing.to_listing() }
                 {listing.display()}
             }
@@ -48,7 +54,7 @@ pub fn Listings<T: Listable>(listings: Vec<T>) -> Element {
 }
 
 #[component]
-fn ListingLink(listing: Listing) -> Element {
+pub fn ListingLink(listing: Listing) -> Element {
     rsx! {
         Link { class: "listing-link", id: listing.id(), to: listing.route, {listing.title} }
     }

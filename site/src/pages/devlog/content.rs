@@ -1,7 +1,6 @@
 use dioxus::prelude::*;
 use writ::data::markdown::*;
-use writ::utils::menu::*;
-use crate::{components::*, utils::render::Render};
+use crate::{utils::render::Render};
 
 #[component]
 pub fn DevLogListing(id: i32) -> Element {
@@ -9,22 +8,22 @@ pub fn DevLogListing(id: i32) -> Element {
 
     let markdown = match md_text() {
         Some(value) => match value {
-            Ok(res) => Markdown::from_string(res),
+            Ok(res) => MarkdownContent::from_string(&res),
              Err(e) => {
                  info!("Error retrieving markdown: {}", e);
-                 Markdown::parse_example()
+                 MarkdownContent::parse_example()
              }
          },
          None => {
              info!("Markdown not found");
-             Markdown::parse_example()
+             MarkdownContent::parse_example()
          }
     };
-    let menu = markdown.to_menu();
+    //let menu = markdown.to_menu();
 
     rsx! {
-        Menu { menu }
-        main { class: "md", {markdown.render()} }
+        //Menu { menu }
+        {markdown.render()}
     }
 }
 
