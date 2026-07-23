@@ -3,8 +3,8 @@ use writ::data::markdown::*;
 use crate::{utils::render::Render};
 
 #[component]
-pub fn DevLogListing(id: i32) -> Element {
-    let md_text = use_server_future(move || get_devlog(id))?;
+pub fn DevLogContent(devlog_id: i32) -> Element {
+    let md_text = use_server_future(move || get_devlog(devlog_id))?;
 
     let markdown = match md_text() {
         Some(value) => match value {

@@ -15,19 +15,19 @@ pub trait Listable: Clone + PartialEq + 'static {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Listing {
-    id: i32,
+    id: String,
     pub route: Route,
     pub title: String,
 }
 
 #[allow(dead_code)]
 impl Listing {
-    pub fn new(id: i32, title: String, route: Route) -> Self {
+    pub fn new(id: String, title: String, route: Route) -> Self {
         Self { id, title, route }
     }
 
-    pub fn id(&self) -> i32 {
-        self.id
+    pub fn id(&self) -> String {
+        self.id.clone()
     }
 }
 

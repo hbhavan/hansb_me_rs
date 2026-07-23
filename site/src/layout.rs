@@ -16,13 +16,13 @@ pub enum Route {
 
     #[route("/devlog")]
     DevLog,
-    #[route("/devlog/listing/:id")]
-    DevLogListing { id: i32 },
+    #[route("/devlog/:devlog_id")]
+    DevLogContent { devlog_id: i32 },
 
     #[route("/projects")]
     Projects,
-    #[route("/projects/:id")]
-    ProjectContent { id: i32 },
+    #[route("/projects/:project_id")]
+    ProjectContent { project_id: String },
 
     #[route("/about")]
     About,

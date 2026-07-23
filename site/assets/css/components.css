@@ -24,6 +24,7 @@
     height: 30px;
 }
 
+/* Banner*/
 .banner {
     align-self: flex-start;
 }
@@ -45,6 +46,7 @@
     font-size: medium;
 }
 
+/* Footer */
 .footer-container {
     display: flex;
     /*gap: 2em;*/
@@ -52,7 +54,7 @@
     text-align: center;
 }
 
-/* Headings */
+/* Heading */
 .heading {
     margin-bottom: 24px;
 }
@@ -65,39 +67,10 @@
     padding-left: 36px;
 }
 
-/* Key Grid */
-.key-grid {
-    gap: 8px;
-    padding: 8px;
-    width: min-content;
-}
-
-.key-grid-cell {
-    border: var(--gold) 2px solid;
-    border-radius: 8px;
-    height: 2em;
-    width: 2em;
-}
-
-.key-grid-cell.grid-active {
-    background-color: var(--purple);
-}
-
-.key-grid-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.key-listener {
-    height: 100%;
-}
-
-
 /* Link */
 .link {
     width: 400px;
-    color: var(--purple);
+    color: var(--text-color);
     border: var(--purple-light) 1px solid;
     text-decoration: none;
     text-align: left;
@@ -147,9 +120,8 @@
 }
 
 /* Menu */
-
 .menu {
-    border-right: var(--gold) 2px solid;
+    border-right: var(--purple-light) 2px solid;
     display: flex;
     flex-direction: column;
     justify-content: right;
@@ -161,8 +133,12 @@
 }
 
 .menu>a {
-    color: var(--gold);
+    color: var(--text-color);
     text-decoration: none;
+}
+
+.menu>a:hover {
+    color: var(--gold);
 }
 
 .menu-main {
@@ -191,7 +167,7 @@
 }
 
 .nav-link a {
-    color: var(--purple);
+    color: var(--text-color);
     font-size: 32px;
     margin-right: 8px;
     text-decoration: none;
@@ -199,23 +175,13 @@
 }
 
 .nav-link>[aria-current="page"] {
-    color: var(--gold);
+    color: var(--purple);
     pointer-events: none;
 }
 
 .nav-link a:hover {
     cursor: pointer;
     color: var(--gold-light);
-}
-
-.nav-link>span {
-    color: grey;
-    font-size: 1.2rem;
-}
-
-.nav-link .selected {
-    color: white;
-    font-size: 1.6rem;
 }
 
 /* Post */
@@ -263,6 +229,7 @@
     z-index: 1;
 }
 
+/* Set */
 .set-board {
     display: grid;
     column-gap: 2.5rem;
@@ -317,20 +284,12 @@ div.set-card.blank:hov {
     display: flex;
 }
 
-.set-blue {
-    color: var(--blue-light);
-}
-
-.set-purple {
-    color: var(--purple-light);
-}
-
-.set-gold {
-    color: var(--gold-light);
-}
-
 .text-blue {
     color: var(--blue);
+}
+
+.text-blue-light {
+    color: var(--blue-light)
 }
 
 .text-purple {

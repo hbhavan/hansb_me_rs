@@ -48,11 +48,13 @@ fn draw_from_empty_deck() {
 
 #[test]
 fn initialize_set() {
-    let set = Set::new(Difficulty::Normal);
-    let (board_width, board_height) = set.get_board_size();
+    let mut set = Set::new(Difficulty::Normal);
+    let board_size = set.get_board_size();
 
-    assert_eq!(set.deck.len(), 81 - board_width * board_height);
-    assert_eq!(set.board.len(), board_width * board_height);
+    set.initialize();
+
+    assert_eq!(set.deck.len(), 81 - board_size);
+    assert_eq!(set.board.len(), board_size);
     assert_eq!(set.score, 0);
     assert_eq!(set.selected.len(), 0);
 }
@@ -60,6 +62,8 @@ fn initialize_set() {
 #[test]
 fn select_card() {
     let mut set = Set::new(Difficulty::Normal);
+
+    set.initialize();
 
     set.select_card(0);
 
@@ -70,6 +74,8 @@ fn select_card() {
 #[test]
 fn select_3_cards() {
     let mut set = Set::new(Difficulty::Normal);
+
+    set.initialize();
 
     set.select_card(0);
     set.select_card(1);
@@ -85,6 +91,8 @@ fn select_3_cards() {
 fn select_4_cards() {
     let mut set = Set::new(Difficulty::Normal);
 
+    set.initialize();
+
     set.select_card(0);
     set.select_card(1);
     set.select_card(2);
@@ -99,6 +107,8 @@ fn select_4_cards() {
 #[test]
 fn select_duplicate_card() {
     let mut set = Set::new(Difficulty::Normal);
+
+    set.initialize();
 
     set.select_card(0);
     set.select_card(1);

@@ -62,14 +62,11 @@ pub enum GameState {
 
 impl Set {
     pub fn new(difficulty: Difficulty) -> Self {
-        let mut deck = Deck::new();
+        let deck = Deck::new();
         let mut board = vec![];
-        let (board_width, board_height) = difficulty.get_board_size();
 
-        deck.shuffle();
-
-        for _ in 0..(board_width * board_height) {
-            board.push(deck.draw());
+        for _ in 0..difficulty.get_board_size() {
+            board.push(Card::blank());
         }
 
         Set {
@@ -80,6 +77,24 @@ impl Set {
             difficulty,
             game_state: GameState::Ongoing(String::from("New game started"))
         }
+    }
+
+    pub fn initialize(&mut self) {
+        self.shuffle();
+        self.deal();
+    }
+
+    pub fn shuffle(&mut self) {
+        self.deck.shuffle()
+    }
+
+    pub fn deal(&mut self) {
+        self.board = vec![];
+
+        for _ in 0..self.difficulty.get_board_size() {
+            self.board.push(self.deck.draw());
+        }
+
     }
 
     pub fn select_card(&mut self, index: usize) {
@@ -132,7 +147,7 @@ impl Set {
         self.game_state = GameState::Forfeit
     }
 
-    pub fn get_board_size(&self) -> (usize, usize) {
+    pub fn get_board_size(&self) -> usize {
         self.difficulty.get_board_size()
     }
 
@@ -283,10 +298,10 @@ impl Card {
 impl Color {
     pub fn get_color(&self) -> String {
         match self {
-            Self::Blue => String::from("set-blue"),
-            Self::Purple => String::from("set-purple"),
-            Self::Gold => String::from("set-gold"),
-            Self::Blank => String::from("set-blank")
+            Self::Blue => String::from("text-blue"),
+            Self::Purple => String::from("text-purple"),
+            Self::Gold => String::from("text-gold"),
+            Self::Blank => String::from("")
         }
     }
 
@@ -370,11 +385,11 @@ impl Difficulty {
         }
     }
 
-    pub fn get_board_size(&self) -> (usize, usize) {
+    pub fn get_board_size(&self) -> usize {
         match self {
-            Difficulty::Easy => (9, 9),
-            Difficulty::Normal => (4, 5),
-            Difficulty::Hard => (3, 4)
+            Difficulty::Easy => 28,
+            Difficulty::Normal => 24,
+            Difficulty::Hard => 20
         }
     }
 }

@@ -3,8 +3,8 @@ use super::*;
 pub struct RPCBot;
 
 impl ProjectData for RPCBot {
-    fn project_id(&self) -> i32 {
-        2
+    fn project_id(&self) -> String {
+        String::from("rpc_bot")
     }
 
     fn title(&self) -> String {

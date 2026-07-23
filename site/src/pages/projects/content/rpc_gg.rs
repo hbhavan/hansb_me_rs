@@ -5,8 +5,8 @@ use super::*;
 pub struct RPCGG;
 
 impl ProjectData for RPCGG {
-    fn project_id(&self) -> i32 {
-        1
+    fn project_id(&self) -> String {
+        String::from("rpc_gg")
     }
 
     fn title(&self) -> String {

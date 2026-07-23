@@ -1,174 +1,149 @@
-use std::{char, fs::File, io::Read};
-
 use dioxus::prelude::*;
+use writ::constants::ProgrammingLanguage;
 use writ::data::*;
 use writ::utils::seq::*;
 
 use super::Render;
 
-impl Render for Markdown {
+impl Render for MarkdownContent {
     fn render(&self) -> Element {
         rsx! {
-            for paragraph in self.content.iter() {
-                {render_paragraph(paragraph.clone())}
+            for block in self.content.iter() {
+                {render_block(block)}
             }
         }
     }
 }
 
-fn render_paragraph(paragraph: Paragraph) -> Element {
-    use Paragraph::*;
+fn render_block<'a>(block: &'a Block) -> Element {
+    use BlockType::*;
+    
+    let content = block.content();
 
-    match paragraph {
-        Header(size, text) => render_header(size, text),
-        CodeSnippet(text) => {
-            rsx! {
-                code { class: "md-code-snippet", {render_texts(text)} }
+    match &block.block_type {
+        BlockQuote =>  rsx! {
+            blockquote { class: "md-block-quote", {render_content(&content)} }
+        },
+        CodeBlock(lang) => rsx! {
+            code { class: vec!["md-code-block", get_lang_class(lang).as_str()].join(" "),
+                {render_content(&content)}
             }
-        }
-        CodeBlock(block) => {
-            rsx! {
-                code { class: "md-code-block", {render_block(block)} }
-            }
-        }
-        OrderedList(list) => {
-            rsx! {
-                ol { class: "md-ol", {render_list(list)} }
-            }
-        }
-        UnorderedList(list) => {
-            rsx! {
-                ul { class: "md-ul", {render_list(list)} }
-            }
-        }
-        BlockQuote(block) => {
-            rsx! {
-                blockquote { class: "md-block-quoute", {render_block(block)} }
-            }
-        }
-        Para(texts) => {
-            rsx! {
-                p { class: "md-para", {render_texts(texts)} }
-            }
-        }
-        HorizontalRule => {
-            rsx! {
-                hr { class: "md-hr" }
-            }
-        }
-        LineBreak => {
-            rsx! {
-                br {}
-            }
-        }
+        },
+        CodeSnippet => rsx! {
+            code { class: "md-code-snippet", {render_content(&content)} }
+        },
+        Header(size) => render_header(*size, content),
+        HorizontalRule => rsx! {
+            hr { class: "md-hr" }
+        },
+        LineBreak => rsx! {
+            br {}
+        },
+        OrderedList(_) => rsx! {
+            ol { class: "md-ol", {render_list(content)} }
+        },
+        Paragraph => rsx! {
+            p { class: "md-para", {render_content(&content)} }
+        },
+        UnorderedList(_) => rsx! {
+            ul { class: "md-ol", {render_list(content)} }
+        },
+        Whitespace | Empty => rsx! {}
     }
 }
 
-fn render_texts(texts: Seq<Text>) -> Element {
+fn render_content<'a>(text: &'a Seq<Text>) -> Element {
     rsx! {
-        for t in texts.iter() {
-            {render_text(t.clone())}
+        for t in text.iter() {
+            {render_text(t)}
         }
     }
 }
 
-fn render_text(text: Text) -> Element {
-    use Text::*;
+fn render_list(text: Seq<Text>) -> Element {
+    let list_items = Text::split_list_content(text);
 
-    match text {
-        Italic(text) => rsx! {
-            em { class: "md-italic", {text} }
-        },
-        Bold(text) => rsx! {
-            strong { class: "md-bold", {text} }
-        },
-        BoldItalic(text) => rsx! {
-            em {
-                strong { class: "md-bold-italic", {text} }
-            }
-        },
-        Struck(text) => rsx! {
-            s { class: "md-struck", {text} }
-        },
-        Code(text) => rsx! {
-            code { class: "md-code", {text} }
-        },
-        Image(src, alt) => {
-            rsx! {
-                img { class: "md-img", src: render_image(src), alt }
-            }
+    rsx! {
+        for list_item in list_items.iter() {
+            li { class: "md-li", {render_content(list_item)} }
         }
-        Link(desc, href) => {
-            rsx! {
-                a { class: "md-link", href, {desc} }
-            }
-        }
-        Normal(text) => rsx! {
-            span { class: "md-text", {text} }
-        },
     }
 }
 
 fn render_header(size: usize, text: Seq<Text>) -> Element {
     let id = text
         .iter()
-        .map(Text::get_text)
+        .map(|x| x.text_content())
         .collect::<Vec<_>>()
         .join("_")
         .replace(" ", "_");
 
     match size {
         1 => rsx! {
-            h1 { class: "md-title", id, {render_texts(text.clone())} }
+            h1 { class: "md-title", id, {render_content(&text)} }
         },
         2 => rsx! {
-            h2 { class: "md-title", id, {render_texts(text.clone())} }
+            h2 { class: "md-title", id, {render_content(&text)} }
         },
         3 => rsx! {
-            h3 { class: "md-title", id, {render_texts(text.clone())} }
+            h3 { class: "md-title", id, {render_content(&text)} }
         },
         4 => rsx! {
-            h4 { class: "md-title", id, {render_texts(text.clone())} }
+            h4 { class: "md-title", id, {render_content(&text)} }
         },
         5 => rsx! {
-            h5 { class: "md-title", id, {render_texts(text.clone())} }
+            h5 { class: "md-title", id, {render_content(&text)} }
         },
         6 => rsx! {
-            h6 { class: "md-title", id, {render_texts(text.clone())} }
+            h6 { class: "md-title", id, {render_content(&text)} }
         },
         _ => rsx! {
-            p { class: "md-title", id, {render_texts(text.clone())} }
+            p { class: "md-title", id, {render_content(&text)} }
         },
     }
 }
 
-fn render_list(items: Seq<Seq<Text>>) -> Element {
-    rsx! {
-        for item in items.iter() {
-            li { class: "md-li", {render_texts(item.clone())} }
-        }
-    }
-}
+fn render_text<'a>(text: &'a Text) -> Element {
+    use TextType::*;
 
-fn render_block(items: Seq<Seq<Text>>) -> Element {
-    rsx! {
-        for item in items.iter() {
-            span { {render_texts(item.clone())} }
+    let content = text.text_content();
+
+    match text.text_type {
+        Bold => rsx! {
+            strong { class: "md-bold", {content} }
+        },
+        BoldItalic => rsx! {
+            em {
+                strong { class: "md-bold-italic", {content} }
+            }
+        },
+        Code => rsx! {
+            code { class: "md-code", {content} }
+        },
+        Image(_) => rsx! {
+            img { src: "", alt: content }
+        },
+        Italic => rsx! {
+            em { class: "md-italic", {content} }
+        },
+        LineBreak => rsx! {
             br {}
-        }
+        },
+        Link(_) => rsx! {
+            a { class: "md-link", href: content }
+        },
+        Normal => rsx! {
+            span { class: "md-text", {content} }
+        },
+        Struck => rsx! {
+            s { class: "md-struck", {content} }
+        },
+        Whitespace => rsx! {}
     }
 }
 
-fn render_image(src: String) -> String {
-    let mut buf = String::from("");
+fn get_lang_class<'a>(language: &'a ProgrammingLanguage) -> String {
+    let alias = language.get_alias();
 
-    let res = match File::open(src).and_then(|mut f| f.read_to_string(&mut buf)) {
-        Ok(_) => Ok(buf),
-        Err(e) => Err(e),
-    };
-
-    match res {
-        Ok(r) => r,
-        Err(e) => String::from(e.to_string()),
-    }
+    format!("langauge-{alias}")
 }

@@ -5,6 +5,8 @@
 
     --selection: #565656;
 
+    --text-color: white;
+
     --blue: #5387B5;
     --blue-light: #63A2D8;
 
@@ -15,8 +17,6 @@
     --purple-light: #BEBAFF;
 
     --shadow: #000000;
-
-    --prm-sec-gradient: linear-gradient(180deg, var(--purple) 35%, var(--gold) 90%);
 
     --header-height: 6rem;
 }
@@ -61,7 +61,7 @@ button:hover {
 
 /* Code */
 code {
-    color: var(--gold-light);
+    /* color: var(--gold-light); */
     white-space: pre;
 }
 

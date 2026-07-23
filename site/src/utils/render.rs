@@ -8,6 +8,5 @@ pub trait RenderMut {
     fn render(&'static mut self) -> Element;
 }
 
-//pub mod markdown;
-pub mod markdown_content;
+pub mod markdown;
 pub mod set_game;

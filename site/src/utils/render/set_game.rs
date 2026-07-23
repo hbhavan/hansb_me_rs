@@ -9,7 +9,11 @@ use super::{Render};
 
 impl Render for SetGame {
     fn render(&self) -> Element {
-        let mut set = use_signal(move || Set::new(Difficulty::Easy));
+        let mut set = use_signal(move || Set::new(Difficulty::Normal));
+
+        use_effect(move || {
+            set.write().initialize()
+        });
 
         rsx! {
             div { class: "set-container",
@@ -117,7 +121,9 @@ fn is_blank<'a>(card: &Card) -> &'a str {
 }
 
 fn on_difficulty_click(set: &mut Set, difficulty: Difficulty) {
-    *set = Set::new(difficulty)
+    *set = Set::new(difficulty);
+
+    set.initialize()
 }
 
 fn test_board(set: &mut Set) {

@@ -5,8 +5,8 @@ use super::*;
 pub struct SetGame;
 
 impl ProjectData for SetGame {
-    fn project_id(&self) -> i32 {
-        4
+    fn project_id(&self) -> String {
+        String::from("set")
     }
 
     fn title(&self) -> String {

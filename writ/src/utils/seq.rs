@@ -59,6 +59,13 @@ impl<T: Clone> Seq<T> {
         }
     }
 
+    pub fn append_item_if(&self, item: T, predicate: fn(&T) -> bool) -> Self {
+        match predicate(&item) {
+            true => self.append_item(item),
+            false => self.clone()
+        }
+    }
+
     pub fn prepend(&self, other: Seq<T>) -> Self {
         let items = vec![other.items.clone(), self.items.clone()].concat();
 

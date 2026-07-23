@@ -4,6 +4,12 @@ use super::Route;
 
 #[component]
 pub fn MainLayout() -> Element {
+    use_effect(move || {
+        spawn(async {
+            let _ = document::eval("hljs.highlightAll();").await;
+        });
+    });
+
     rsx! {
         Banner {}
 

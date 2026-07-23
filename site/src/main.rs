@@ -46,6 +46,11 @@ fn App() -> Element {
             rel: "stylesheet",
             href: "https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
         }
+        document::Link {
+            rel: "stylesheet",
+            href: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css",
+        }
+        document::Script { src: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js" }
 
         Router::<Route> {}
     }

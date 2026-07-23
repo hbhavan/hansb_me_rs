@@ -18,7 +18,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct Project {
-    project_id: i32,
+    project_id: String,
     pub title: String,
     pub link: Option<String>,
     pub project_type: ProjectType,
@@ -29,7 +29,7 @@ pub struct Project {
 }
 
 impl Project {
-    pub fn id(&self) -> i32 {
+    pub fn id(&self) -> String {
         self.project_id.clone()
     }
 
@@ -39,9 +39,9 @@ impl Project {
         let skills = project_data.skills();
 
         let listing = Listing::new(
-            project_id,
+            project_id.clone(),
             title,
-            Route::ProjectContent { id: project_id },
+            Route::ProjectContent { project_id },
         );
 
         (listing, skills)
@@ -95,7 +95,7 @@ pub enum Status {
 }
 
 pub trait ProjectData {
-    fn project_id(&self) -> i32;
+    fn project_id(&self) -> String;
 
     fn title(&self) -> String;
 
@@ -175,10 +175,10 @@ pub fn project_listings() -> Vec<(Listing, Vec<Skill>)> {
 }
 
 
-pub fn get_project_by_id(id: i32) -> Option<Project> {
+pub fn get_project_by_id(project_id: String) -> Option<Project> {
     projects()
         .iter()
-        .find(|x| x.project_id() == id)
+        .find(|x| x.project_id() == project_id)
         .map(|x| Project::from_project_data(x.deref()))
 }
 
